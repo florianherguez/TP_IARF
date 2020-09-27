@@ -123,7 +123,7 @@ void retrait (TypeMessage *leMessage) {
  * */
 void deposer (TypeMessage leMessage, int rangProd) {
     pthread_mutex_lock(&mutex);
- 
+    printf("nbCasesLibre : %d \n", nbCasesLibre);
     if (nbCasesLibre == 0) {
         pthread_cond_wait(&caseLibre,&mutex);
     }
@@ -142,7 +142,7 @@ void deposer (TypeMessage leMessage, int rangProd) {
  * */
 void retirer (TypeMessage *unMessage, int rangConso) {
     pthread_mutex_lock(&mutex);
-
+    printf("nbCasesLibre : %d \n", nbCasesLibre);
     if (nbCasesLibre == nbCases) {
         pthread_cond_wait(&casePleine, &mutex);
     }
@@ -223,10 +223,9 @@ int main(int argc, char *argv[]) {
     nbConso = NB_CONSO_MAX;
   nbThds = nbProd + nbConso;
   nbCases = atoi(argv[3]);
-  if (nbCases > NB_CASES_MAX) {
+  if (nbCases > NB_CASES_MAX)
       nbCases = NB_CASES_MAX;
-      nbCasesLibre = NB_CASES_MAX;
-  }
+  nbCasesLibre = nbCases;
 
   // Q1 : ajouter 2 parametres :
   // -  nombre de depots a faire par un producteur
@@ -234,6 +233,9 @@ int main(int argc, char *argv[]) {
 
   NB_FOIS_PROD = atoi(argv[4]);
   NB_FOIS_CONSO = atoi(argv[5]);
+
+  printf("nbCases : %d \n", nbCases);
+  printf("nbCasesLibre : %d \n", nbCasesLibre);
 
   initialiserVarPartagees();
 
