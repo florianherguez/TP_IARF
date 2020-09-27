@@ -16,8 +16,10 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define NB_FOIS_PROD   2 //10 
-#define NB_FOIS_CONSO  2 //10 
+#include <stdbool.h>
+
+//#define NB_FOIS_PROD   2 //10 
+//#define NB_FOIS_CONSO  2 //10 
 
 #define NB_PROD_MAX   20
 #define NB_CONSO_MAX  20
@@ -38,7 +40,19 @@ typedef struct {
 
 // Variables partagees entre tous
 RessourceCritique resCritiques; // Modifications donc conflits possibles
-int nbCases;                    // Taille effective du buffer, 
+int nbCases;                    // Taille effective du buffer
+int nbCasesLibre;
+
+bool prochainType;
+
+int NB_FOIS_PROD;
+int NB_FOIS_CONSO;
+
+pthread_mutex_t mutex;
+pthread_cond_t caseLibrePour[2];
+pthread_cond_t casePleine;
+
+//int nbLibre;
                                 // Pas de modif donc pas de conflit
 typedef struct {                // Parametre des threads
   int rang;                     // - rang de creation
@@ -112,9 +126,24 @@ void retrait (TypeMessage *leMessage) {
  * La synchronisation sera ajoutee dans cette operation
  * */
 void deposer (TypeMessage leMessage, int rangProd) {
-  depot(&leMessage);
-  printf("\tProd %d : Message a ete depose = [T%d] %s (de %d)\n", 
-         rangProd, leMessage.type, leMessage.info, leMessage.rangProd);
+    pthread_mutex_lock(&mutex);
+    printf("nbCasesLibre : %d \n", nbCasesLibre);
+    if ((nbCasesLibre == 0)||!(prochainType != leMessage.type)) {
+        pthread_cond_wait(&caseLibrePour[leMessage.type],&mutex);
+    }
+    depot(&leMessage);
+    nbCasesLibre--;
+
+    printf("\tProd %d : Message a ete depose = [T%d] %s (de %d)\n",
+        rangProd, leMessage.type, leMessage.info, leMessage.rangProd);
+
+    prochainType = !prochainType;
+    if (nbCasesLibre != 0){
+        pthread_cond_signal(&caseLibrePour[prochainType]);
+    }
+    pthread_cond_signal(&casePleine);
+
+    pthread_mutex_unlock(&mutex);
 }  
 
 /*--------------------------------------------------
@@ -122,9 +151,18 @@ void deposer (TypeMessage leMessage, int rangProd) {
  * La synchronisation sera ajoutee dans cette operation
  * */
 void retirer (TypeMessage *unMessage, int rangConso) {
-  retrait(unMessage);
-  printf("\t\tConso %d : Message a ete lu = [T%d] %s (de %d)\n", 
-         rangConso, unMessage->type, unMessage->info, unMessage->rangProd);
+    pthread_mutex_lock(&mutex);
+    printf("nbCasesLibre : %d \n", nbCasesLibre);
+    if (nbCasesLibre == nbCases) {
+        pthread_cond_wait(&casePleine, &mutex);
+    }
+    retrait(unMessage);
+    nbCasesLibre++;
+    printf("\t\tConso %d : Message a ete lu = [T%d] %s (de %d)\n",
+        rangConso, unMessage->type, unMessage->info, unMessage->rangProd);
+    pthread_cond_signal(&caseLibrePour[prochainType]);
+
+    pthread_mutex_unlock(&mutex);
 }  
 
 /*--------------------------------------------------*/
@@ -181,8 +219,8 @@ int main(int argc, char *argv[]) {
   Parametres paramThds[NB_PROD_MAX + NB_CONSO_MAX];
   pthread_t idThdProd[NB_PROD_MAX], idThdConso[NB_CONSO_MAX];
 
-  if (argc <= 3) {
-    printf ("Usage: %s <Nb Prod <= %d> <Nb Conso <= %d> <Nb Cases <= %d> \n", 
+  if (argc <= 5) {
+    printf ("Usage: %s <Nb Prod <= %d> <Nb Conso <= %d> <Nb Cases <= %d> <Nb Fois Prod> <Nb Fois Conso>\n", 
              argv[0], NB_PROD_MAX, NB_CONSO_MAX, NB_CASES_MAX);
     exit(2);
   }
@@ -196,10 +234,20 @@ int main(int argc, char *argv[]) {
   nbThds = nbProd + nbConso;
   nbCases = atoi(argv[3]);
   if (nbCases > NB_CASES_MAX)
-    nbCases = NB_CASES_MAX;
+      nbCases = NB_CASES_MAX;
+  nbCasesLibre = nbCases;
+
+  prochainType = true;
+
   // Q1 : ajouter 2 parametres :
   // -  nombre de depots a faire par un producteur
   // -  nombre de retraits a faire par un consommateur
+
+  NB_FOIS_PROD = atoi(argv[4]);
+  NB_FOIS_CONSO = atoi(argv[5]);
+
+  printf("nbCases : %d \n", nbCases);
+  printf("nbCasesLibre : %d \n", nbCasesLibre);
 
   initialiserVarPartagees();
 
