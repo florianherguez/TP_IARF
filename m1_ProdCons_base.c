@@ -123,8 +123,8 @@ void retrait (TypeMessage *leMessage) {
  * */
 void deposer (TypeMessage leMessage, int rangProd) {
     pthread_mutex_lock(&mutex);
-    printf("nbCasesLibre : %d \n", nbCasesLibre);
-    if (nbCasesLibre == 0) {
+
+    while (nbCasesLibre == 0) {
         pthread_cond_wait(&caseLibre,&mutex);
     }
     depot(&leMessage);
@@ -142,8 +142,8 @@ void deposer (TypeMessage leMessage, int rangProd) {
  * */
 void retirer (TypeMessage *unMessage, int rangConso) {
     pthread_mutex_lock(&mutex);
-    printf("nbCasesLibre : %d \n", nbCasesLibre);
-    if (nbCasesLibre == nbCases) {
+
+    while (nbCasesLibre == nbCases) {
         pthread_cond_wait(&casePleine, &mutex);
     }
     retrait(unMessage);
@@ -233,9 +233,6 @@ int main(int argc, char *argv[]) {
 
   NB_FOIS_PROD = atoi(argv[4]);
   NB_FOIS_CONSO = atoi(argv[5]);
-
-  printf("nbCases : %d \n", nbCases);
-  printf("nbCasesLibre : %d \n", nbCasesLibre);
 
   initialiserVarPartagees();
 
