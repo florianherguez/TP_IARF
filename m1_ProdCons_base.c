@@ -127,8 +127,8 @@ void retrait (TypeMessage *leMessage) {
  * */
 void deposer (TypeMessage leMessage, int rangProd) {
     pthread_mutex_lock(&mutex);
-    printf("nbCasesLibre : %d \n", nbCasesLibre);
-    if ((nbCasesLibre == 0)||!(prochainType != leMessage.type)) {
+
+    while ((nbCasesLibre == 0)||(prochainType != leMessage.type)) {
         pthread_cond_wait(&caseLibrePour[leMessage.type],&mutex);
     }
     depot(&leMessage);
@@ -138,9 +138,11 @@ void deposer (TypeMessage leMessage, int rangProd) {
         rangProd, leMessage.type, leMessage.info, leMessage.rangProd);
 
     prochainType = !prochainType;
+
     if (nbCasesLibre != 0){
         pthread_cond_signal(&caseLibrePour[prochainType]);
     }
+
     pthread_cond_signal(&casePleine);
 
     pthread_mutex_unlock(&mutex);
@@ -152,14 +154,16 @@ void deposer (TypeMessage leMessage, int rangProd) {
  * */
 void retirer (TypeMessage *unMessage, int rangConso) {
     pthread_mutex_lock(&mutex);
-    printf("nbCasesLibre : %d \n", nbCasesLibre);
-    if (nbCasesLibre == nbCases) {
+
+    while (nbCasesLibre == nbCases) {
         pthread_cond_wait(&casePleine, &mutex);
     }
     retrait(unMessage);
     nbCasesLibre++;
+
     printf("\t\tConso %d : Message a ete lu = [T%d] %s (de %d)\n",
         rangConso, unMessage->type, unMessage->info, unMessage->rangProd);
+
     pthread_cond_signal(&caseLibrePour[prochainType]);
 
     pthread_mutex_unlock(&mutex);
@@ -245,9 +249,6 @@ int main(int argc, char *argv[]) {
 
   NB_FOIS_PROD = atoi(argv[4]);
   NB_FOIS_CONSO = atoi(argv[5]);
-
-  printf("nbCases : %d \n", nbCases);
-  printf("nbCasesLibre : %d \n", nbCasesLibre);
 
   initialiserVarPartagees();
 
