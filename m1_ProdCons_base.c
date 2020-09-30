@@ -144,11 +144,11 @@ void deposer (TypeMessage leMessage, int rangProd) {
  * Correspondra au service du moniteur vu en TD
  * La synchronisation sera ajoutee dans cette operation
  * */
-void retirer (TypeMessage *unMessage, int rangConso) {
+void retirer (TypeMessage *unMessage,int typeDemandee, int rangConso) {
     pthread_mutex_lock(&mutex);
 
-    while ((nbCasesLibre == nbCases)||(unMessage->type != resCritiques.buffer[resCritiques.iRetrait].type)) {
-        pthread_cond_wait(&casePleinePour[unMessage->type], &mutex);
+    while ((nbCasesLibre == nbCases)||(typeDemandee != resCritiques.buffer[resCritiques.iRetrait].type)) {
+        pthread_cond_wait(&casePleinePour[typeDemandee], &mutex);
     }
 
     retrait(unMessage);
@@ -204,7 +204,7 @@ void * consommateur (void *arg) {
 #ifdef TRACE_SOUHAIT
     printf("\t\tConso %d : Je veux retirer un message \n", param->rang);
 #endif
-    retirer(&unMessage, param->rang);
+    retirer(&unMessage, param->typeMsg, param->rang);
 
     //usleep(rand()%(100 * param->rang + 100));
   }
