@@ -41,6 +41,11 @@ RessourceCritique resCritiques; // Modifications donc conflits possibles
 int nbCases;                    // Taille effective du buffer,
 
 int nbCasesLibre;
+
+int nbDepot;
+int depotEnCours;
+int rangEnCours;
+
 int NB_FOIS_PROD;
 int NB_FOIS_CONSO;
 
@@ -124,14 +129,25 @@ void retrait (TypeMessage *leMessage) {
 void deposer (TypeMessage leMessage, int rangProd) {
     pthread_mutex_lock(&mutex);
 
-    while (nbCasesLibre == 0) {
+    while (nbCasesLibre == 0 || (depotEnCours == 1 && rangEnCours != leMessage.rangProd)) {
         pthread_cond_wait(&caseLibre,&mutex);
     }
+
+    rangEnCours = leMessage.rangProd;
+    depotEnCours = 1;
+
     depot(&leMessage);
-    nbCasesLibre--;
     printf("\tProd %d : Message a ete depose = [T%d] %s (de %d)\n",
         rangProd, leMessage.type, leMessage.info, leMessage.rangProd);
-    pthread_cond_signal(&casePleine);
+
+    nbCasesLibre--;
+    nbDepot++;
+
+    if (nbDepot == 2) {
+        depotEnCours = 0;
+        nbDepot = 0;
+        pthread_cond_signal(&casePleine);
+    }
 
     pthread_mutex_unlock(&mutex);
 }  
@@ -143,13 +159,16 @@ void deposer (TypeMessage leMessage, int rangProd) {
 void retirer (TypeMessage *unMessage, int rangConso) {
     pthread_mutex_lock(&mutex);
 
-    while (nbCasesLibre == nbCases) {
+    while (nbCasesLibre == nbCases || depotEnCours == 1) {
         pthread_cond_wait(&casePleine, &mutex);
     }
+
     retrait(unMessage);
-    nbCasesLibre++;
     printf("\t\tConso %d : Message a ete lu = [T%d] %s (de %d)\n",
         rangConso, unMessage->type, unMessage->info, unMessage->rangProd);
+
+    nbCasesLibre++;
+
     pthread_cond_signal(&caseLibre);
 
     pthread_mutex_unlock(&mutex);
@@ -226,6 +245,10 @@ int main(int argc, char *argv[]) {
   if (nbCases > NB_CASES_MAX)
       nbCases = NB_CASES_MAX;
   nbCasesLibre = nbCases;
+
+  nbDepot = 0;
+  depotEnCours = 0;
+  rangEnCours = 0;
 
   // Q1 : ajouter 2 parametres :
   // -  nombre de depots a faire par un producteur
