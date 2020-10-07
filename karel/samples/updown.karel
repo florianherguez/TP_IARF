@@ -1,0 +1,41 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+	
+	WHILE not-next-to-a-beeper DO
+	  BEGIN
+	  
+	    { to the north }
+	    WHILE front-is-clear DO
+	      BEGIN
+	        move;
+	        IF next-to-a-beeper THEN
+	          turnoff
+	      END;
+	      
+	    turnleft;
+	    move;
+	    turnleft;
+	    
+	    { to the south }
+	    WHILE front-is-clear DO
+	      BEGIN
+	        move;
+	        IF next-to-a-beeper THEN
+	          turnoff
+	      END;
+	  
+		turnleft;
+		turnleft;
+		turnleft;
+		move;
+		turnleft;
+		turnleft;
+		turnleft;		
+	  
+	  END;
+	  
+	  turnoff;
+
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

@@ -1,0 +1,19 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+
+    WHILE not-next-to-a-beeper DO
+      move;
+    
+    WHILE not-facing-north DO
+      BEGIN
+        turnleft;
+      END;
+    
+    WHILE not-facing-east DO
+      WHILE not-facing-west DO
+        turnleft;
+  
+    turnoff
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

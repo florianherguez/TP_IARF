@@ -1,0 +1,14 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+    WHILE not-next-to-a-beeper DO
+      BEGIN
+        IF right-is-clear
+          THEN turnleft;
+        WHILE front-is-blocked DO
+          turnleft;
+        move
+      END;
+    turnoff
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

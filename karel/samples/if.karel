@@ -1,0 +1,52 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+
+    IF not-next-to-a-beeper THEN
+      move;
+    
+    IF not-facing-north THEN
+      BEGIN
+        turnleft;
+      END;
+    
+    IF not-facing-east THEN
+      IF not-facing-west THEN
+        turnleft;
+
+    IF not-facing-north THEN
+      BEGIN
+        turnleft;
+		IF not-facing-north THEN
+			turnleft;
+      END;
+
+    IF not-facing-north THEN
+      BEGIN
+        turnleft;
+		IF not-facing-north THEN
+			IF not-facing-north THEN
+				IF not-facing-north THEN
+					turnleft;
+      END;
+
+    IF not-facing-east THEN
+      IF not-facing-west THEN
+		BEGIN
+			turnleft;
+			turnleft
+		END;
+
+    IF not-facing-east THEN
+      IF not-facing-west THEN
+		IF not-facing-east THEN
+		  IF not-facing-west THEN
+			IF not-facing-east THEN
+			  IF not-facing-west THEN
+				IF not-facing-east THEN
+				  IF not-facing-west THEN
+					turnleft;
+  
+    turnoff
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

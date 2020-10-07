@@ -1,0 +1,10 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+    move;
+    turnleft;
+    putbeeper;
+    pickbeeper;
+    turnoff
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

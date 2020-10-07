@@ -1,0 +1,85 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+
+	IF not-next-to-a-beeper THEN
+	IF not-next-to-a-beeper THEN
+		move
+	ELSE
+		turnleft;
+		
+	IF not-next-to-a-beeper THEN
+		IF not-next-to-a-beeper THEN
+			move
+		ELSE
+			move
+	ELSE
+		turnleft;
+	
+	IF not-next-to-a-beeper THEN
+		IF not-next-to-a-beeper THEN
+			move
+		ELSE
+			move
+	ELSE
+		IF not-next-to-a-beeper THEN
+			move
+		ELSE
+			move;
+
+	IF not-next-to-a-beeper THEN
+	IF not-next-to-a-beeper THEN
+	IF not-next-to-a-beeper THEN
+	IF not-next-to-a-beeper THEN
+		move
+	ELSE
+		turnleft;
+	
+	ITERATE 5 TIMES
+		IF not-next-to-a-beeper THEN
+			move;
+
+	ITERATE 5 TIMES
+		IF not-next-to-a-beeper THEN
+			move
+		ELSE
+			turnleft;
+
+	WHILE not-next-to-a-beeper DO
+		IF not-next-to-a-beeper THEN
+			move;
+
+	WHILE not-next-to-a-beeper DO
+		IF not-next-to-a-beeper THEN
+			move
+		ELSE
+			turnleft;
+
+	IF not-next-to-a-beeper THEN
+		move
+	ELSE
+		WHILE not-next-to-a-beeper DO
+			IF not-next-to-a-beeper THEN
+				move
+			ELSE
+				turnleft;
+
+	IF not-next-to-a-beeper THEN
+		move
+	ELSE
+		WHILE not-next-to-a-beeper DO
+			IF not-next-to-a-beeper THEN
+				move;
+
+	IF not-next-to-a-beeper THEN
+		WHILE not-next-to-a-beeper DO
+			IF not-next-to-a-beeper THEN
+				move
+			ELSE
+				turnleft
+	ELSE
+		turnleft;
+
+    turnoff
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

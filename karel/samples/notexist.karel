@@ -1,0 +1,21 @@
+     { A simple karel program to walk in a square to the right }
+     
+     BEGINNING-OF-PROGRAM
+     
+       DEFINE-NEW-INSTRUCTION turnright AS
+         ITERATE 3 TIMES
+           turnleft;
+
+       BEGINNING-OF-EXECUTION
+         move;
+         turnright;
+         move;
+         turnRight;
+         move;
+         turnright;
+         move;
+         turnright;
+         turnoff
+       END-OF-EXECUTION
+     
+     END-OF-PROGRAM

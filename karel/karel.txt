@@ -1,0 +1,455 @@
+This documentation is provided by Karel v4.0, Copyright (C) 2000 Tom Mitchell.
+
+Karel
+=====
+
+   This document is light on the details of the Karel language.  The
+definitive reference is Richard Pattis' `Karel The Robot: A Gentle
+Introduction to The Art of Programming'(1).  What this document
+attempts to describe is the Karel simulator, which loads and executes
+Karel programs.
+
+   There are three user interfaces that come with the Karel package:
+text, curses, and gtk.  The text interface prints out a line whenever
+Karel moves or turns.  This is useful for debugging and regression
+testing, but not very useful to a user.  The curses interface allows
+users to run Karel programs on a terminal, no windowing system
+required.  The gtk interface can be used on systems that have the X
+Window system and the GTK development headers and libraries.
+
+   The architecture of the Karel package is such that developers can
+build their own user interfaces using virtually any toolkit they
+desire.  All they need is a C interface to interact with the Karel
+engine.  Karel was written this way to avoid being tied to any
+particular GUI toolkit.  The choice of GUI toolkits is largely personal
+preference; I set the goal of being relatively toolkit independent.  I
+expect it to be possible to build user interfaces to the Karel
+environment in Qt, Motif/Lesstif, Athena, Tcl/Tk, Java, perl, guile, or
+any other system that has a C callout mechanism.
+
+   ---------- Footnotes ----------
+
+   (1) Pattis, Richard E., Jim Roberts, and Mark Stehlik. `Karel the
+Robot: A Gentle Introduction to The Art of Programming'. New York:
+Wiley, 1995.  ISBN: 0471597252
+
+
+File: karel.info,  Node: How to use this manual,  Next: Acknowledgements,  Prev: Karel,  Up: Introduction
+
+Defining Karel's World
+======================
+
+* Menu:
+
+* World overview::
+* World general rules::
+* World reference::
+* World example::
+
+
+File: karel.info,  Node: World overview,  Next: World general rules,  Prev: Defining a world,  Up: Defining a world
+
+Overview
+--------
+
+   Karel's world has intersections, walls, and beepers.  The programs
+the Karel executes are independent of the world he moves around in.
+You can execute the same program in multiple worlds, or multiple
+programs in the same world.
+
+   Karel's world is defined in a file which is loaded by a Karel
+simulator.  The world file is a simple text file containing commands
+that define the size of the world, the position of walls and beepers,
+and Karel's starting position.
+
+
+File: karel.info,  Node: World general rules,  Next: World reference,  Prev: World overview,  Up: Defining a world
+
+General Rules
+-------------
+
+   Each line in the file describes a part of Karel's world.  We'll look
+at each in turn, but first there are some general rules for the world
+file.
+
+   * The commands are not case sensitive.  WORLD, World, and world are
+     equivalent.
+
+   * Karel's world is made up of Avenues and Streets.  These correspond
+     to Cartesian X and Y coordinates respectively.  Avenues are
+     vertical lines, increasing to the right.  Streets are horizontal
+     lines increasing to the north.  In the world file, coordinates are
+     always described as avenues then street just as in geometry, where
+     coordinates are described as x, y.
+
+   * Directions are defined as follows:
+        - North == 1
+
+        - East  == 2
+
+        - South == 3
+
+        - West  == 4
+
+
+File: karel.info,  Node: World reference,  Next: World example,  Prev: World general rules,  Up: Defining a world
+
+Reference
+---------
+
+     World NUM_STREETS NUM_AVENUES
+     World 5 5
+   The World command defines a world that is 5 avenues wide by 5 streets
+high.
+
+     Beepers STREET AVENUE NUMBER
+     Beepers 3 3 1
+   The beeper command places a number of beepers on an intersection.  In
+this case, one beeper would be placed on the intersection {3, 3}
+
+     Robot STREET AVENUE DIRECTION NUM_BEEPERS
+     Robot 4 3 1 0
+   The robot starting position is defined with the Robot command.  In
+this example, the robot starts at {4, 3}, facing North (1), with zero
+beepers in his beeper bag.
+
+     Wall STREET AVENUE DIRECTION
+     Wall 2 2 1
+   The Wall command places a wall section in Karel's world.  Each wall
+section is one block long.  Walls can either be north or west of an
+intersection (1 or 4 respectively).  In this example, a horizontal wall
+is placed directly north of the intersection {2, 2}.
+
+
+File: karel.info,  Node: World example,  Prev: World reference,  Up: Defining a world
+
+Example
+-------
+
+   Here is a sample world file:
+
+     World 5 5
+     Beepers 3 3 1
+     Robot 4 3 1 0
+     Wall 2 2 1
+     Wall 3 2 1
+     Wall 1 1 4
+     Wall 2 1 4
+     Wall 2 2 4
+     Wall 3 1 4
+     Wall 3 2 4
+     Wall 3 3 4
+     Wall 4 1 4
+     Wall 4 2 4
+     Wall 4 3 4
+     Wall 4 4 4
+
+   The resulting world, in the curses interface, looks like this:
+
+       - - - - -
+      |+ + + + +|
+     
+      |+ + + +|+|
+     
+      |+ + *|+|+|
+         - -
+      |+ +|+|+|+|
+     
+      |+|+|+|+|+|
+      ----------
+
+
+File: karel.info,  Node: Writing Karel Programs,  Next: Karel Language Reference,  Prev: Defining a world,  Up: Karel Users Guide
+
+Writing Karel Programs
+======================
+
+* Menu:
+
+* A Simple Program::
+* Sample Program 2::
+* Turning Right::
+* Maze Program::
+
+   The definitive source of Karel information is Richard Pattis' book
+`Karel the Robot: A Gentle Introduction to The Art of Programming'.
+This section is intended to be a brief overview of the language in order
+to get started using Karel.
+
+
+File: karel.info,  Node: A Simple Program,  Next: Sample Program 2,  Prev: Writing Karel Programs,  Up: Writing Karel Programs
+
+A Simple Program
+----------------
+
+   This is the simplest correct Karel program.  All valid Karel programs
+must minimally have these 5 lines.
+
+     BEGINNING-OF-PROGRAM
+       BEGINNING-OF-EXECUTION
+         turnoff
+       END-OF-EXECUTION
+     END-OF-PROGRAM
+
+   This program does nothing but turn Karel off.  It is a good sample
+because it concisely shows the structure of a valid Karel program.
+
+
+File: karel.info,  Node: Sample Program 2,  Next: Turning Right,  Prev: A Simple Program,  Up: Writing Karel Programs
+
+Sample Karel Program 2
+----------------------
+
+   By adding calls to the `move' and `turnleft' primitives, this
+program causes Karel to walk a square, returning to his starting point.
+Note that in this version of Karel, the '{' and '}' are used for
+comments, just like Pascal.
+
+     { A simple karel program to walk in a square to the left }
+     
+     BEGINNING-OF-PROGRAM
+       BEGINNING-OF-EXECUTION
+         move;
+         turnleft;
+         move;
+         turnleft;
+         move;
+         turnleft;
+         move;
+         turnleft;
+         turnoff
+       END-OF-EXECUTION
+     END-OF-PROGRAM
+
+
+File: karel.info,  Node: Turning Right,  Next: Maze Program,  Prev: Sample Program 2,  Up: Writing Karel Programs
+
+Turning Right
+-------------
+
+   The Karel language has a `turnleft' primitive, but lacks a
+`turnright' primitive.  One of the first instructions a new Karel
+programmer does is define the `turnright' instruction for Karel.  As
+the old adage goes, "two wrongs don't make a right, but three lefts do".
+
+   The following example demonstrates how to define a new instruction
+for Karel out of the existing primitives.  This example will cause
+Karel to walk in a square to the right, instead of the left as in the
+previous example.
+
+     { A simple karel program to walk in a square to the right }
+     
+     BEGINNING-OF-PROGRAM
+     
+       DEFINE-NEW-INSTRUCTION turnright AS
+         ITERATE 3 TIMES
+           turnleft;
+     
+       BEGINNING-OF-EXECUTION
+         move;
+         turnright;
+         move;
+         turnright;
+         move;
+         turnright;
+         move;
+         turnright;
+         turnoff
+       END-OF-EXECUTION
+     
+     END-OF-PROGRAM
+
+
+File: karel.info,  Node: Maze Program,  Prev: Turning Right,  Up: Writing Karel Programs
+
+Solving a Maze
+--------------
+
+   Programs can be constructed for Karel that will allow him to find a
+beeper by navigating through a maze.  This sample program has Karel
+follow walls looking for openings until he locates a beeper.  You can
+find this program in the distribution in file `samples/maze.k'.
+
+     { karel follows the right wall until a beeper is found}
+     
+     BEGINNING-OF-PROGRAM
+       DEFINE-NEW-INSTRUCTION turnright AS
+         ITERATE 3 TIMES
+           turnleft;
+     
+       BEGINNING-OF-EXECUTION
+         WHILE not-next-to-a-beeper DO
+           BEGIN
+             IF right-is-clear
+               THEN turnright
+               ELSE
+                 WHILE front-is-blocked DO
+                   turnleft;
+             move
+           END;
+         turnoff
+       END-OF-EXECUTION
+     END-OF-PROGRAM
+
+
+File: karel.info,  Node: Karel Language Reference,  Prev: Writing Karel Programs,  Up: Karel Users Guide
+
+Karel Language Reference
+========================
+
+* Menu:
+
+* Primitives::
+* Tests::
+* Control Structures::
+* Defining Procedures::
+
+
+File: karel.info,  Node: Primitives,  Next: Tests,  Prev: Karel Language Reference,  Up: Karel Language Reference
+
+Primitives
+----------
+
+ - Built-in: move
+     Move Karel one intersection forward.
+
+ - Built-in: turnleft
+     Pivots Karel 90 degrees left.
+
+ - Built-in: pickbeeper
+     Take a beeper from the current intersection and put it in the
+     beeper bag.
+
+ - Built-in: putbeeper
+     Take a beeper from the beeper bag and put it at the current
+     intersection.
+
+ - Built-in: turnoff
+     Turn Karel off.
+
+
+File: karel.info,  Node: Tests,  Next: Control Structures,  Prev: Primitives,  Up: Karel Language Reference
+
+Tests
+-----
+
+ - Test: front-is-clear
+     True if there is no wall directly in front of Karel.  False if
+     there is.
+
+ - Test: front-is-blocked
+     True if there is a wall directly in front of Karel.  False
+     otherwise.
+
+ - Test: left-is-clear
+     True if there is no wall immediately to Karel's left.  False if
+     there is.
+
+ - Test: left-is-blocked
+     True if there is a wall immediately to Karel's left.  False
+     otherwise.
+
+ - Test: right-is-clear
+     True if there is no wall immediately to Karel's right.  False if
+     there is.
+
+ - Test: right-is-blocked
+     True if there is a wall immediately to Karel's right.  False
+     otherwise.
+
+ - Test: next-to-a-beeper
+     True if Karel is standing at an intersection that has a beeper.
+     False otherwise.
+
+ - Test: not-next-to-a-beeper
+     True if there is not beeper at the current intersection.  False if
+     there is a beeper at the current intersection.
+
+ - Test: facing-north
+     True if Karel is facing north.  False otherwise.
+
+ - Test: not-facing-north
+     True if Karel is not facing north.  False if he is facing north.
+
+ - Test: facing-south
+     True if Karel is facing south.  False otherwise.
+
+ - Test: not-facing-south
+     True if Karel is not facing south.  False if he is facing south.
+
+ - Test: facing-east
+     True if Karel is facing east.  False otherwise.
+
+ - Test: not-facing-east
+     True if Karel is not facing east.  False if he is facing east.
+
+ - Test: facing-west
+     True if Karel is facing west.  False otherwise.
+
+ - Test: not-facing-west
+     True if Karel is not facing west.  False if he is facing west.
+
+ - Test: any-beepers-in-beeper-bag
+     True if there is at least one beeper in Karel's beeper bag.  False
+     if the beeper bag is empty.
+
+ - Test: no-beepers-in-beeper-bag
+     True if Karel's beeper bag is empty.  False if there is at least
+     one beeper in the beeper bag.
+
+
+File: karel.info,  Node: Control Structures,  Next: Defining Procedures,  Prev: Tests,  Up: Karel Language Reference
+
+Control Structures
+------------------
+
+     BEGINNING-OF-PROGRAM
+       <definitions>
+         BEGINNING-OF-EXECUTION
+           <stmt>;
+           <stmt>;
+           <stmt>;
+           ...
+         END-OF-EXECUTION
+     END-OF-PROGRAM
+
+       BEGIN
+         <stmt>;
+         <stmt>;
+         <stmt>;
+         ...
+       END;
+     
+       IF <test>
+         THEN <stmt>
+         [ ELSE <stmt> ]
+     
+       ITERATE <positive-integer> TIMES
+         <stmt>
+     
+       WHILE <test> DO
+         <stmt>
+
+
+File: karel.info,  Node: Defining Procedures,  Prev: Control Structures,  Up: Karel Language Reference
+
+Defining Procedures
+-------------------
+
+       DEFINE-NEW-INSTRUCTION <name> AS
+         <stmt>
+
+
+File: karel.info,  Node: Karel Programmers Guide,  Next: Index,  Prev: Karel Users Guide,  Up: Top
+
+Karel Programmer's Guide
+************************
+
+* Menu:
+
+* Architecture::
+* Building applications::
+* Extending Karel::
+* API::
+
+

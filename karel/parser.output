@@ -1,0 +1,152 @@
+   0  $accept : %entry% $end
+
+   1  prog : BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC END_PROG
+
+   2  stmts_opt :
+   3            | stmts
+
+   4  stmts : stmt
+   5        | stmts SEMI stmt
+   6        | stmts SEMI
+
+   7  stmt : simple_stmt
+
+   8  simple_stmt : TURN_LEFT
+   9              | TURN_OFF
+  10              | MOVE
+
+  11  %entry% : '\001' prog
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . prog  (11)
+
+	BEGIN_PROG  shift 3
+	.  error
+
+	prog  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	prog : BEGIN_PROG . BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
+
+	BEGIN_EXEC  shift 5
+	.  error
+
+
+state 4
+	%entry% : '\001' prog .  (11)
+
+	.  reduce 11
+
+
+state 5
+	prog : BEGIN_PROG BEGIN_EXEC . stmts_opt END_EXEC END_PROG  (1)
+	stmts_opt : .  (2)
+
+	MOVE  shift 6
+	TURN_LEFT  shift 7
+	TURN_OFF  shift 8
+	END_EXEC  reduce 2
+
+	stmts_opt  goto 9
+	stmts  goto 10
+	stmt  goto 11
+	simple_stmt  goto 12
+
+
+state 6
+	simple_stmt : MOVE .  (10)
+
+	.  reduce 10
+
+
+state 7
+	simple_stmt : TURN_LEFT .  (8)
+
+	.  reduce 8
+
+
+state 8
+	simple_stmt : TURN_OFF .  (9)
+
+	.  reduce 9
+
+
+state 9
+	prog : BEGIN_PROG BEGIN_EXEC stmts_opt . END_EXEC END_PROG  (1)
+
+	END_EXEC  shift 13
+	.  error
+
+
+state 10
+	stmts_opt : stmts .  (3)
+	stmts : stmts . SEMI stmt  (5)
+	stmts : stmts . SEMI  (6)
+
+	SEMI  shift 14
+	END_EXEC  reduce 3
+
+
+state 11
+	stmts : stmt .  (4)
+
+	.  reduce 4
+
+
+state 12
+	stmt : simple_stmt .  (7)
+
+	.  reduce 7
+
+
+state 13
+	prog : BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC . END_PROG  (1)
+
+	END_PROG  shift 15
+	.  error
+
+
+state 14
+	stmts : stmts SEMI . stmt  (5)
+	stmts : stmts SEMI .  (6)
+
+	MOVE  shift 6
+	TURN_LEFT  shift 7
+	TURN_OFF  shift 8
+	END_EXEC  reduce 6
+	SEMI  reduce 6
+
+	stmt  goto 16
+	simple_stmt  goto 12
+
+
+state 15
+	prog : BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC END_PROG .  (1)
+
+	.  reduce 1
+
+
+state 16
+	stmts : stmts SEMI stmt .  (5)
+
+	.  reduce 5
+
+
+13 terminals, 7 nonterminals
+12 grammar rules, 17 states

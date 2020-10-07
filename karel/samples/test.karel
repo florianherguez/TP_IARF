@@ -1,0 +1,28 @@
+BEGINNING-OF-PROGRAM
+  BEGINNING-OF-EXECUTION
+    move;
+    turnleft;
+    turnoff;
+    
+    ITERATE 10 TIMES
+		move;
+   
+    WHILE next-to-a-beeper DO
+		move;
+	
+	IF next-to-a-beeper THEN
+		move;
+	
+	BEGIN
+		move;
+		move
+	END
+	
+	{IF next-to-a-beeper THEN
+		move
+	ELSE
+		turnleft}
+   
+  END-OF-EXECUTION
+END-OF-PROGRAM
+

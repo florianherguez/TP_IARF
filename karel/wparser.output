@@ -1,0 +1,179 @@
+   0  $accept : %entry% $end
+
+   1  top : cmds EOF
+
+   2  cmds : cmds cmd
+   3       | WORLD INT INT
+
+   4  cmd : BEEPERS INT INT INT
+   5      | ROBOT INT INT INT INT
+   6      | WALL INT INT INT
+
+   7  %entry% : '\001' top
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . top  (7)
+
+	WORLD  shift 3
+	.  error
+
+	top  goto 4
+	cmds  goto 5
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	cmds : WORLD . INT INT  (3)
+
+	INT  shift 6
+	.  error
+
+
+state 4
+	%entry% : '\001' top .  (7)
+
+	.  reduce 7
+
+
+state 5
+	top : cmds . EOF  (1)
+	cmds : cmds . cmd  (2)
+
+	BEEPERS  shift 7
+	ROBOT  shift 8
+	WALL  shift 9
+	EOF  shift 10
+	.  error
+
+	cmd  goto 11
+
+
+state 6
+	cmds : WORLD INT . INT  (3)
+
+	INT  shift 12
+	.  error
+
+
+state 7
+	cmd : BEEPERS . INT INT INT  (4)
+
+	INT  shift 13
+	.  error
+
+
+state 8
+	cmd : ROBOT . INT INT INT INT  (5)
+
+	INT  shift 14
+	.  error
+
+
+state 9
+	cmd : WALL . INT INT INT  (6)
+
+	INT  shift 15
+	.  error
+
+
+state 10
+	top : cmds EOF .  (1)
+
+	.  reduce 1
+
+
+state 11
+	cmds : cmds cmd .  (2)
+
+	.  reduce 2
+
+
+state 12
+	cmds : WORLD INT INT .  (3)
+
+	.  reduce 3
+
+
+state 13
+	cmd : BEEPERS INT . INT INT  (4)
+
+	INT  shift 16
+	.  error
+
+
+state 14
+	cmd : ROBOT INT . INT INT INT  (5)
+
+	INT  shift 17
+	.  error
+
+
+state 15
+	cmd : WALL INT . INT INT  (6)
+
+	INT  shift 18
+	.  error
+
+
+state 16
+	cmd : BEEPERS INT INT . INT  (4)
+
+	INT  shift 19
+	.  error
+
+
+state 17
+	cmd : ROBOT INT INT . INT INT  (5)
+
+	INT  shift 20
+	.  error
+
+
+state 18
+	cmd : WALL INT INT . INT  (6)
+
+	INT  shift 21
+	.  error
+
+
+state 19
+	cmd : BEEPERS INT INT INT .  (4)
+
+	.  reduce 4
+
+
+state 20
+	cmd : ROBOT INT INT INT . INT  (5)
+
+	INT  shift 22
+	.  error
+
+
+state 21
+	cmd : WALL INT INT INT .  (6)
+
+	.  reduce 6
+
+
+state 22
+	cmd : ROBOT INT INT INT INT .  (5)
+
+	.  reduce 5
+
+
+9 terminals, 5 nonterminals
+8 grammar rules, 23 states
