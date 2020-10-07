@@ -42,10 +42,6 @@ int nbCases;                    // Taille effective du buffer,
 
 int nbCasesLibre;
 
-int nbDepot;
-int depotEnCours;
-int rangEnCours;
-
 int NB_FOIS_PROD;
 int NB_FOIS_CONSO;
 
@@ -126,28 +122,24 @@ void retrait (TypeMessage *leMessage) {
  * Correspondra au service du moniteur vu en TD
  * La synchronisation sera ajoutee dans cette operation
  * */
-void deposer (TypeMessage leMessage, int rangProd) {
+void deposer (TypeMessage leMessage1, TypeMessage leMessage2, int rangProd) {
     pthread_mutex_lock(&mutex);
 
-    while (nbCasesLibre == 0 || (depotEnCours == 1 && rangEnCours != leMessage.rangProd)) {
+    while (nbCasesLibre < 2) {
         pthread_cond_wait(&caseLibre,&mutex);
     }
 
-    rangEnCours = leMessage.rangProd;
-    depotEnCours = 1;
-
-    depot(&leMessage);
+    depot(&leMessage1);
     printf("\tProd %d : Message a ete depose = [T%d] %s (de %d)\n",
-        rangProd, leMessage.type, leMessage.info, leMessage.rangProd);
+        rangProd, leMessage1.type, leMessage1.info, leMessage1.rangProd);
 
-    nbCasesLibre--;
-    nbDepot++;
+    depot(&leMessage2);
+    printf("\tProd %d : Message a ete depose = [T%d] %s (de %d)\n",
+        rangProd, leMessage2.type, leMessage2.info, leMessage2.rangProd);
 
-    if (nbDepot == 2) {
-        depotEnCours = 0;
-        nbDepot = 0;
-        pthread_cond_signal(&casePleine);
-    }
+    nbCasesLibre = nbCasesLibre - 2;
+
+    pthread_cond_signal(&casePleine);
 
     pthread_mutex_unlock(&mutex);
 }  
@@ -159,7 +151,7 @@ void deposer (TypeMessage leMessage, int rangProd) {
 void retirer (TypeMessage *unMessage, int rangConso) {
     pthread_mutex_lock(&mutex);
 
-    while (nbCasesLibre == nbCases || depotEnCours == 1) {
+    while (nbCasesLibre == nbCases) {
         pthread_cond_wait(&casePleine, &mutex);
     }
 
@@ -169,7 +161,10 @@ void retirer (TypeMessage *unMessage, int rangConso) {
 
     nbCasesLibre++;
 
-    pthread_cond_signal(&caseLibre);
+    if (nbCasesLibre >= 2)
+    {
+        pthread_cond_signal(&caseLibre);
+    }
 
     pthread_mutex_unlock(&mutex);
 }  
@@ -177,23 +172,28 @@ void retirer (TypeMessage *unMessage, int rangConso) {
 /*--------------------------------------------------*/
 void * producteur (void *arg) {
   int i;
-  TypeMessage leMessage;
+  TypeMessage leMessage1;
+  TypeMessage leMessage2;
   Parametres param = *(Parametres *)arg;
 
   srand(pthread_self());
 
   //** Q1 : NB_FOIS_PROD a remplacer par le nouveau parametre du main
   for (i = 0; i < NB_FOIS_PROD; i++) {
-    sprintf (leMessage.info, "%s %d %s %d", "bonjour num ", i, "de prod ", param.rang);
-    leMessage.type = param.typeMsg;
-    leMessage.rangProd = param.rang;
+    sprintf (leMessage1.info, "%s %d %s %d", "bonjour num ", i, "de prod ", param.rang);
+    leMessage1.type = param.typeMsg;
+    leMessage1.rangProd = param.rang;
+
+    sprintf(leMessage2.info, "%s %d %s %d", "bonjour num ", i, "de prod ", param.rang);
+    leMessage2.type = param.typeMsg;
+    leMessage2.rangProd = param.rang;
 
 #ifdef TRACE_SOUHAIT
     printf("\t\tProd %d : Je veux deposer = [T%d] %s (de %d)\n", 
          param.rang, leMessage.type, leMessage.info, leMessage.rangProd);
 #endif
 
-    deposer(leMessage, param.rang);
+    deposer(leMessage1, leMessage2, param.rang);
 
     //usleep(rand()%(100 * param.rang + 100));
   }
@@ -245,10 +245,6 @@ int main(int argc, char *argv[]) {
   if (nbCases > NB_CASES_MAX)
       nbCases = NB_CASES_MAX;
   nbCasesLibre = nbCases;
-
-  nbDepot = 0;
-  depotEnCours = 0;
-  rangEnCours = 0;
 
   // Q1 : ajouter 2 parametres :
   // -  nombre de depots a faire par un producteur
