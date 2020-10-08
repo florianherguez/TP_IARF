@@ -14,8 +14,11 @@
    8  simple_stmt : TURN_LEFT
    9              | TURN_OFF
   10              | MOVE
+  11              | PICK_BEEPER
+  12              | PUT_BEEPER
+  13              | NEXT_TO_A_BEEPER
 
-  11  %entry% : '\001' prog
+  14  %entry% : '\001' prog
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -27,7 +30,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . prog  (11)
+	%entry% : '\001' . prog  (14)
 
 	BEGIN_PROG  shift 3
 	.  error
@@ -49,9 +52,9 @@ state 3
 
 
 state 4
-	%entry% : '\001' prog .  (11)
+	%entry% : '\001' prog .  (14)
 
-	.  reduce 11
+	.  reduce 14
 
 
 state 5
@@ -61,12 +64,15 @@ state 5
 	MOVE  shift 6
 	TURN_LEFT  shift 7
 	TURN_OFF  shift 8
+	PICK_BEEPER  shift 9
+	PUT_BEEPER  shift 10
+	NEXT_TO_A_BEEPER  shift 11
 	END_EXEC  reduce 2
 
-	stmts_opt  goto 9
-	stmts  goto 10
-	stmt  goto 11
-	simple_stmt  goto 12
+	stmts_opt  goto 12
+	stmts  goto 13
+	stmt  goto 14
+	simple_stmt  goto 15
 
 
 state 6
@@ -88,65 +94,86 @@ state 8
 
 
 state 9
-	prog : BEGIN_PROG BEGIN_EXEC stmts_opt . END_EXEC END_PROG  (1)
+	simple_stmt : PICK_BEEPER .  (11)
 
-	END_EXEC  shift 13
-	.  error
+	.  reduce 11
 
 
 state 10
+	simple_stmt : PUT_BEEPER .  (12)
+
+	.  reduce 12
+
+
+state 11
+	simple_stmt : NEXT_TO_A_BEEPER .  (13)
+
+	.  reduce 13
+
+
+state 12
+	prog : BEGIN_PROG BEGIN_EXEC stmts_opt . END_EXEC END_PROG  (1)
+
+	END_EXEC  shift 16
+	.  error
+
+
+state 13
 	stmts_opt : stmts .  (3)
 	stmts : stmts . SEMI stmt  (5)
 	stmts : stmts . SEMI  (6)
 
-	SEMI  shift 14
+	SEMI  shift 17
 	END_EXEC  reduce 3
 
 
-state 11
+state 14
 	stmts : stmt .  (4)
 
 	.  reduce 4
 
 
-state 12
+state 15
 	stmt : simple_stmt .  (7)
 
 	.  reduce 7
 
 
-state 13
+state 16
 	prog : BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC . END_PROG  (1)
 
-	END_PROG  shift 15
+	END_PROG  shift 18
 	.  error
 
 
-state 14
+state 17
 	stmts : stmts SEMI . stmt  (5)
 	stmts : stmts SEMI .  (6)
 
 	MOVE  shift 6
 	TURN_LEFT  shift 7
 	TURN_OFF  shift 8
+	PICK_BEEPER  shift 9
+	PUT_BEEPER  shift 10
+	NEXT_TO_A_BEEPER  shift 11
 	END_EXEC  reduce 6
 	SEMI  reduce 6
 
-	stmt  goto 16
-	simple_stmt  goto 12
+	stmt  goto 19
+	simple_stmt  goto 15
 
 
-state 15
+state 18
 	prog : BEGIN_PROG BEGIN_EXEC stmts_opt END_EXEC END_PROG .  (1)
 
 	.  reduce 1
 
 
-state 16
+state 19
 	stmts : stmts SEMI stmt .  (5)
 
 	.  reduce 5
 
 
-13 terminals, 7 nonterminals
-12 grammar rules, 17 states
+17 terminals, 7 nonterminals
+15 grammar rules, 20 states
