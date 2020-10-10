@@ -23,7 +23,7 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		space						{ scan lexbuf }
 |		comment						{ scan lexbuf }
 
-|		integer	as integer			{ INT (int_of_string integer) }
+|		integer	as number			{ INT (int_of_string number) }
 
 |		"pickbeeper"				{ PICK_BEEPER }
 |		"putbeeper"					{ PUT_BEEPER }
