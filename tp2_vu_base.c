@@ -14,6 +14,14 @@
 
 int nbPassages; /* Valeur commune à tous */
 
+pthread_mutex_t mutex;
+
+pthread_cond_t autoVU[2];
+
+int sensDeCirculation;
+
+int nbVehiculeVU;
+
 /* A compléter pour assurer la synchronisation souhaitée */
 
 /*---------------------------------------------------------------------*/
@@ -25,6 +33,17 @@ void thdErreur(int codeErr, char *msgErr, void *codeArret) {
 /*---------------------------------------------------------------------*/
 void demanderAccesVU (int monSens) {
   /* A compléter pour assurer la synchronisation souhaitée */
+    pthread_mutex_lock(&mutex);
+
+    while (nbVehiculeVU != 0 && sensDeCirculation != monSens)
+    {
+        pthread_cond_wait(&autoVU[monSens], &mutex);
+    }
+    sensDeCirculation = monSens;
+    nbVehiculeVU++;
+    pthread_cond_signal(&autoVU[monSens]);
+
+    pthread_mutex_unlock(&mutex);
 }
 
 /*---------------------------------------------------------------------*/
@@ -35,6 +54,15 @@ int oppose (int sens) {
 /*---------------------------------------------------------------------*/
 void libererAccesVU (void) { 
   /* A compléter pour assurer la synchronisation souhaitée */
+    pthread_mutex_lock(&mutex);
+
+    nbVehiculeVU--;
+    if (nbVehiculeVU == 0)
+    {
+        pthread_cond_signal(&autoVU[oppose(sensDeCirculation)]);
+    }
+
+    pthread_mutex_unlock(&mutex);
 }
 
 /*---------------------------------------------------------------------*/
@@ -75,6 +103,8 @@ void *vehicule (void *arg) {
 int main(int argc, char*argv[]) {
   pthread_t idThd[2][NB_VEH_MAX];
   int       nbVeh[2], sensVeh[2][NB_VEH_MAX], i, s, etat;
+
+  nbVehiculeVU = 0;
 
   if (argc != 4) {
     printf("Usage : %s <Nb vehicules sens O> <Nb vehicules sens 1> <Nb passages sur VU>>\n", argv[0]);

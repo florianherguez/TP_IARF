@@ -26,7 +26,7 @@ bool ecriture;
 pthread_mutex_t mutex;
 
 pthread_cond_t autoLire;
-int nbWaitAutoLire;
+
 pthread_cond_t autoEcrire;
 int nbWaitAutoEcrire;
 
@@ -52,9 +52,7 @@ void debutLecture(int monNum) {
     pthread_mutex_lock(&mutex);
     while (ecriture || nbWaitAutoEcrire != 0)
     {
-        nbWaitAutoLire++;
         pthread_cond_wait(&autoLire, &mutex);
-        nbWaitAutoLire--;
     }
     nbLecture++;
     pthread_cond_signal(&autoLire);
@@ -177,6 +175,8 @@ int main(int argc, char*argv[]) {
   int       rangRedacteurs[NB_MAX_REDACTEURS];
   int nbLecteurs, nbRedacteurs;
   int i, etat;
+
+  ecriture = false;
 
   nbLecture = 0;
 
