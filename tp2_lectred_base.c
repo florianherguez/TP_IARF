@@ -7,6 +7,7 @@
 #include <string.h> /* strerror */
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -17,6 +18,17 @@
 #define NB_ECRITURES       6 
 
 /* A compléter pour assurer la synchronisation voulue */
+
+int nbLecture;
+
+bool ecriture;
+
+pthread_mutex_t mutex;
+
+pthread_cond_t autoLire;
+int nbWaitAutoLire;
+pthread_cond_t autoEcrire;
+int nbWaitAutoEcrire;
 
 int fd; // Descriptif partage par tous les threads
 // => les lecteurs partagent ce descriptif et donc la position
@@ -36,23 +48,60 @@ void debutLecture(int monNum) {
 /*---------------------------------------------------------------------*/
   /* A compléter pour assurer la synchronisation voulue */
   // Ne pas oublier de tester tous les retours des fonctions
+
+    pthread_mutex_lock(&mutex);
+    while (ecriture || nbWaitAutoEcrire != 0)
+    {
+        nbWaitAutoLire++;
+        pthread_cond_wait(&autoLire, &mutex);
+        nbWaitAutoLire--;
+    }
+    nbLecture++;
+    pthread_cond_signal(&autoLire);
+    pthread_mutex_unlock(&mutex);
 }
 
 /*---------------------------------------------------------------------*/
 void finLecture(int monNum) {
 /*---------------------------------------------------------------------*/
   /* A compléter pour assurer la synchronisation voulue */
-	
+    pthread_mutex_lock(&mutex);
+    nbLecture--;
+    if (nbLecture == 0)
+    {
+        pthread_cond_signal(&autoEcrire);
+    }
+    pthread_mutex_unlock(&mutex);
 }
 
 /*---------------------------------------------------------------------*/
 void debutEcriture(int monNum) {
   /* A compléter pour assurer la synchronisation voulue */
+    pthread_mutex_lock(&mutex);
+    while ((nbLecture != 0) || ecriture)
+    {
+        nbWaitAutoEcrire++;
+        pthread_cond_wait(&autoEcrire, &mutex);
+        nbWaitAutoEcrire--;
+    }
+    ecriture = true;
+    pthread_mutex_unlock(&mutex);
 }
 
 void finEcriture(int monNum) {
 /*---------------------------------------------------------------------*/
   /* A compléter pour assurer la synchronisation voulue */
+    pthread_mutex_lock(&mutex);
+    ecriture = false;
+    if (nbWaitAutoEcrire != 0)
+    {
+        pthread_cond_signal(&autoEcrire);
+    }
+    else
+    {
+        pthread_cond_signal(&autoLire);
+    }
+    pthread_mutex_unlock(&mutex);
 }
 
 /*---------------------------------------------------------------------*/
@@ -128,6 +177,11 @@ int main(int argc, char*argv[]) {
   int       rangRedacteurs[NB_MAX_REDACTEURS];
   int nbLecteurs, nbRedacteurs;
   int i, etat;
+
+  nbLecture = 0;
+
+  nbWaitAutoEcrire = 0;
+  nbWaitAutoLire = 0;
 
   if (argc != 3) {
     printf("Usage: %s <Nb lecteurs <= %d> <Nb redacteurs <= %d> \n", 
