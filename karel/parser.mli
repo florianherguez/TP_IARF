@@ -30,6 +30,12 @@ type token =
   | NOT_FACING_WEST
   | ANY_BEEPERS_IN_BEEPER_BAG
   | NO_BEEPERS_IN_BEEPER_BAG
+  | ITERATE
+  | TIMES
+  | WHILE
+  | DO
+  | IF
+  | THEN
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit

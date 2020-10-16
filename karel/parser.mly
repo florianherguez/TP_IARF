@@ -45,6 +45,15 @@ open Karel
 %token ANY_BEEPERS_IN_BEEPER_BAG
 %token NO_BEEPERS_IN_BEEPER_BAG
 
+%token ITERATE
+%token TIMES
+
+%token WHILE
+%token DO
+
+%token IF
+%token THEN
+
 %type <unit> prog
 %start prog
 
@@ -60,16 +69,21 @@ stmts_opt:	/* empty */		{ () }
 |			stmts			{ () }
 ;
 
-stmts:		stmt			{ () }
-|			stmts SEMI stmt	{ () }
-|			stmts SEMI		{ () }
+stmts:		block
+				{ () }
+|			stmts SEMI block
+				{ () }
+|			stmts SEMI
+				{ () }
 ;
 
 stmt:		simple_stmt
 				{ () }
+|			ITERATE INT TIMES stmt
+				{ () }
+|			ITERATE INT TIMES BEGIN stmts END 
+				{ () }
 ;
-
-
 
 
 simple_stmt: TURN_LEFT
@@ -86,39 +100,46 @@ simple_stmt: TURN_LEFT
 				{ gen (INVOKE (next_beeper, 0, 0)) }
 ;
 
-test:	FRONT_IS_CLEAR
-		{()}
-|		FRONT_IS_BLOCKED
-		{()}
-|		LEFT_IS_CLEAR
-		{()}
-|		LEFT_IS_BLOCKED
-		{()}
-|		RIGHT_IS_CLEAR
-		{()}
-|		RIGHT_IS_BLOCKED
-		{()}
-|		NOT_NEXT_TO_A_BEEPER
-		{()}
-|		NEXT_TO_A_BEEPER
-		{()}
-|		FACING_NORTH
-		{()}
-|		NOT_FACING_NORTH
-		{()}
-|		FACING_EAST
-		{()}
-|		NOT_FACING_EAST
-		{()}
-|		FACING_SOUTH
-		{()}
-|		NOT_FACING_SOUTH
-		{()}
-|		FACING_WEST
-		{()}
-|		NOT_FACING_WEST
-		{()}
-|		ANY_BEEPERS_IN_BEEPER_BAG
-		{()}
-|		NO_BEEPERS_IN_BEEPER_BAG
-		{()}
+block:		BEGIN stmts_opt END
+				{ () }
+|			stmt
+				{ () }
+;
+
+test:		FRONT_IS_CLEAR
+				{ () }
+|			FRONT_IS_BLOCKED
+				{ () }
+|			LEFT_IS_CLEAR
+				{ () }
+|			LEFT_IS_BLOCKED
+				{ () }
+|			RIGHT_IS_CLEAR
+				{ () }
+|			RIGHT_IS_BLOCKED
+				{ () }
+|			NOT_NEXT_TO_A_BEEPER
+				{ () }
+|			NEXT_TO_A_BEEPER
+				{ () }
+|			FACING_NORTH
+				{ () }
+|			NOT_FACING_NORTH
+				{ () }
+|			FACING_EAST
+				{ () }
+|			NOT_FACING_EAST
+				{ () }
+|			FACING_SOUTH
+				{ () }
+|			NOT_FACING_SOUTH
+				{ () }
+|			FACING_WEST
+				{ () }
+|			NOT_FACING_WEST
+				{ () }
+|			ANY_BEEPERS_IN_BEEPER_BAG
+				{ () }
+|			NO_BEEPERS_IN_BEEPER_BAG
+				{ () }
+;

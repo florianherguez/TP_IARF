@@ -3,7 +3,7 @@ open Parser
 }
 
 let comment = '{' [^ '}']* '}'
-let space = [' ' '\t' '\n']+
+let space = [' ' '\t' '\n' '\r']+
 let integers = ['0' - '9']+
 
 rule scan =
@@ -37,6 +37,15 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"not-facing-west"			{ NOT_FACING_WEST }
 |		"any-beepers-in-beeper-bag"	{ ANY_BEEPERS_IN_BEEPER_BAG }
 |		"no-beepers-in-beeper-bag"	{ NO_BEEPERS_IN_BEEPER_BAG }
+
+|		"ITERATE"					{ ITERATE }
+|		"TIMES"						{ TIMES }
+
+|		"WHILE"						{ WHILE }
+|		"DO"						{ DO }
+
+|		"IF"						{ IF }
+|		"THEN"						{ THEN }	
 		
 |		";"							{ SEMI }
 
