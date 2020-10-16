@@ -27,6 +27,24 @@ open Karel
 
 %token <int> INT
 
+%token FRONT_IS_CLEAR
+%token FRONT_IS_BLOCKED
+%token LEFT_IS_CLEAR
+%token LEFT_IS_BLOCKED
+%token RIGHT_IS_CLEAR
+%token RIGHT_IS_BLOCKED
+%token NOT_NEXT_TO_A_BEEPER
+%token FACING_NORTH
+%token NOT_FACING_NORTH
+%token FACING_EAST
+%token NOT_FACING_EAST
+%token FACING_SOUTH
+%token NOT_FACING_SOUTH
+%token FACING_WEST
+%token NOT_FACING_WEST
+%token ANY_BEEPERS_IN_BEEPER_BAG
+%token NO_BEEPERS_IN_BEEPER_BAG
+
 %type <unit> prog
 %start prog
 
@@ -68,4 +86,39 @@ simple_stmt: TURN_LEFT
 				{ gen (INVOKE (next_beeper, 0, 0)) }
 ;
 
-
+test:	FRONT_IS_CLEAR
+		{()}
+|		FRONT_IS_BLOCKED
+		{()}
+|		LEFT_IS_CLEAR
+		{()}
+|		LEFT_IS_BLOCKED
+		{()}
+|		RIGHT_IS_CLEAR
+		{()}
+|		RIGHT_IS_BLOCKED
+		{()}
+|		NOT_NEXT_TO_A_BEEPER
+		{()}
+|		NEXT_TO_A_BEEPER
+		{()}
+|		FACING_NORTH
+		{()}
+|		NOT_FACING_NORTH
+		{()}
+|		FACING_EAST
+		{()}
+|		NOT_FACING_EAST
+		{()}
+|		FACING_SOUTH
+		{()}
+|		NOT_FACING_SOUTH
+		{()}
+|		FACING_WEST
+		{()}
+|		NOT_FACING_WEST
+		{()}
+|		ANY_BEEPERS_IN_BEEPER_BAG
+		{()}
+|		NO_BEEPERS_IN_BEEPER_BAG
+		{()}

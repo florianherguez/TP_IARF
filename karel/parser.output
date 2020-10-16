@@ -18,7 +18,26 @@
   12              | PUT_BEEPER
   13              | NEXT_TO_A_BEEPER
 
-  14  %entry% : '\001' prog
+  14  test : FRONT_IS_CLEAR
+  15       | FRONT_IS_BLOCKED
+  16       | LEFT_IS_CLEAR
+  17       | LEFT_IS_BLOCKED
+  18       | RIGHT_IS_CLEAR
+  19       | RIGHT_IS_BLOCKED
+  20       | NOT_NEXT_TO_A_BEEPER
+  21       | NEXT_TO_A_BEEPER
+  22       | FACING_NORTH
+  23       | NOT_FACING_NORTH
+  24       | FACING_EAST
+  25       | NOT_FACING_EAST
+  26       | FACING_SOUTH
+  27       | NOT_FACING_SOUTH
+  28       | FACING_WEST
+  29       | NOT_FACING_WEST
+  30       | ANY_BEEPERS_IN_BEEPER_BAG
+  31       | NO_BEEPERS_IN_BEEPER_BAG
+
+  32  %entry% : '\001' prog
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -30,7 +49,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . prog  (14)
+	%entry% : '\001' . prog  (32)
 
 	BEGIN_PROG  shift 3
 	.  error
@@ -52,9 +71,9 @@ state 3
 
 
 state 4
-	%entry% : '\001' prog .  (14)
+	%entry% : '\001' prog .  (32)
 
-	.  reduce 14
+	.  reduce 32
 
 
 state 5
@@ -175,5 +194,26 @@ state 19
 	.  reduce 5
 
 
-17 terminals, 7 nonterminals
-15 grammar rules, 20 states
+Rules never reduced:
+	test : FRONT_IS_CLEAR  (14)
+	test : FRONT_IS_BLOCKED  (15)
+	test : LEFT_IS_CLEAR  (16)
+	test : LEFT_IS_BLOCKED  (17)
+	test : RIGHT_IS_CLEAR  (18)
+	test : RIGHT_IS_BLOCKED  (19)
+	test : NOT_NEXT_TO_A_BEEPER  (20)
+	test : NEXT_TO_A_BEEPER  (21)
+	test : FACING_NORTH  (22)
+	test : NOT_FACING_NORTH  (23)
+	test : FACING_EAST  (24)
+	test : NOT_FACING_EAST  (25)
+	test : FACING_SOUTH  (26)
+	test : NOT_FACING_SOUTH  (27)
+	test : FACING_WEST  (28)
+	test : NOT_FACING_WEST  (29)
+	test : ANY_BEEPERS_IN_BEEPER_BAG  (30)
+	test : NO_BEEPERS_IN_BEEPER_BAG  (31)
+
+
+34 terminals, 8 nonterminals
+33 grammar rules, 20 states
