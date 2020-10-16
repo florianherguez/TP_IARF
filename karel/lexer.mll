@@ -22,6 +22,7 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"next-to-a-beeper"			{ NEXT_TO_A_BEEPER }
 
 |		"front-is-clear"			{ FRONT_IS_CLEAR }
+|		"front-is-blocked"			{ FRONT_IS_BLOCKED }
 |		"left-is_clear"				{ LEFT_IS_CLEAR }
 |		"left-is-blocked"			{ LEFT_IS_BLOCKED }
 |		"right-is-clear"			{ RIGHT_IS_CLEAR }

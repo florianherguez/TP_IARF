@@ -79,9 +79,11 @@ stmts:		block
 
 stmt:		simple_stmt
 				{ () }
-|			ITERATE INT TIMES stmt
+|			ITERATE INT TIMES block
 				{ () }
-|			ITERATE INT TIMES BEGIN stmts END 
+|			WHILE test DO block
+				{ () }
+|			IF test THEN block
 				{ () }
 ;
 
