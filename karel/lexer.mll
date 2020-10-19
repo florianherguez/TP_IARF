@@ -5,6 +5,7 @@ open Parser
 let comment = '{' [^ '}']* '}'
 let space = [' ' '\t' '\n' '\r']+
 let integers = ['0' - '9']+
+let string = ['_' 'a' - 'z' 'A' - 'Z']['a' - 'z' 'A' - 'Z' '0' - '9' '_']*
 
 rule scan =
 parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
@@ -46,10 +47,14 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"DO"						{ DO }
 
 |		"IF"						{ IF }
-|		"THEN"						{ THEN }	
+|		"THEN"						{ THEN }
+
+|		"DEFINE-NEW-INSTRUCTION"	{ DEFINE_NEW_INSTRUCTION }
+|		"AS"						{ AS }
 		
 |		";"							{ SEMI }
 
+|		string as identifier		{ ID( identifier )}
 |		integers as number			{ INT( int_of_string number) }
 |		space						{ scan lexbuf }
 |		comment						{ scan lexbuf }

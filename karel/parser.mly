@@ -54,6 +54,11 @@ open Karel
 %token IF
 %token THEN
 
+%token DEFINE_NEW_INSTRUCTION
+%token AS
+
+%token <string> ID
+
 %type <unit> prog
 %start prog
 
@@ -100,6 +105,11 @@ simple_stmt: TURN_LEFT
 				{ gen (INVOKE (put_beeper, 0, 0)) }
 |			NEXT_TO_A_BEEPER
 				{ gen (INVOKE (next_beeper, 0, 0)) }
+;
+
+define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts_opt
+				{ () }
+|			
 ;
 
 block:		BEGIN stmts_opt END
