@@ -140,10 +140,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Expression.cpp" />
+    <ClCompile Include="IntToken.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OperationToken.cpp" />
+    <ClCompile Include="Token.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Expression.h" />
+    <ClInclude Include="IntToken.h" />
+    <ClInclude Include="OperationToken.h" />
+    <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
