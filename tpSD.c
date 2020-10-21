@@ -89,7 +89,7 @@ void print_array_bubble_sort(int* array, int length, int k_aff) {
 }
 
 void bubble_sort(int * array, int n, int k) {
-	// TO DO
+	
     printf("To Do bubble_sort \n");
     int k_aff = k;
     while (k > 0)
@@ -122,7 +122,7 @@ int left(int i) {
 
 int right(int i) {
     // TO DO    
-    return 2*(i+ 1);
+    return 2 * i + 2;
 }
 
 void percolate_down(Heap heap, int i){
@@ -130,15 +130,11 @@ void percolate_down(Heap heap, int i){
     int l = left(i);
     int r = right(i);
 
-    int m;
-
-    if ((l < heap.size) && (heap.array[i] < heap.array[l]))
+    int m = i;
+    printf("pos = %d \n", m);
+    if ((l < heap.size) && (heap.array[m] < heap.array[l]))
     {
         m = l;
-    }
-    else
-    {
-        m = i;
     }
     if ((r < heap.size) && (heap.array[m] < heap.array[r]))
     {
@@ -146,7 +142,12 @@ void percolate_down(Heap heap, int i){
     }
     if (m != i)
     {
+        printf("array avant permut : ");
+        print_array(heap.array, heap.length);
+        printf("permut %d -> %d \n", i, m);
         permut_heap(heap, i, m);
+        printf("array apres permut : ");
+        print_array(heap.array, heap.length);
         percolate_down(heap, m);
     }
 }
@@ -156,11 +157,14 @@ void build_heap(Heap heap) {
     printf("To Do build_heap \n");
 
     heap.size = heap.length;
-    for (int i = heap.size/2; i >= 0; i--)
+    printf("array debut : ");
+    print_array(heap.array, heap.length);
+    for (int i = heap.size/2 - 1; i >= 0; i--)
     {
         percolate_down(heap, i);
     }
-
+    printf("array fin : ");
+    print_array(heap.array, heap.length);
     //Affichage
     //print_array(heap.array, heap.length);
 }
@@ -171,17 +175,41 @@ void build_heap(Heap heap) {
 
 int parent(int i) {
     // TO DO
-    return 0;   
+    return  (i - 1) / 2;   
 }
 
 void percolate_up(Heap heap, int i) {
     // TO DO
+    int j = parent(i);
+    while ((j >= 0) && (heap.array[j] < heap.array[i]))
+    {
+        printf("permut %d -> %d \n", heap.array[i], heap.array[j]);
+        permut_heap(heap, i, j);
+        i = j;
+        j = parent(i);
+    }
 }
 
 void add(Heap * heap, int element) {
     // TO DO
     printf("To Do add \n");
 
+    printf("actual size = %d \n", heap->size);
+    printf("length = %d \n", heap->length);
+
+    if (heap->size == heap->length)
+    {
+        printf("OverFlow : Cannot put the element into the heap\n");
+    }
+    else{
+        printf("ajout de l'element %d à la place %d\n", element, heap->size);
+        heap->array[heap->size] = element;
+
+        percolate_up(*heap, heap->size);
+
+        heap->size = heap->size + 1;
+        printf("fin add size = %d \n", heap->size);
+    }
 }
 
 
@@ -191,7 +219,12 @@ void add(Heap * heap, int element) {
 int remove_max(Heap * heap) {
     // TO DO
     printf("To Do remove_max \n");
-    return 0;
+
+    int max = heap->array[0];
+    heap->array[0] = heap->array[heap->size];
+    heap->size = heap->size - 1;
+    percolate_down(*heap, 0);
+    return max;
 }
 
 
@@ -264,15 +297,25 @@ int main( int argc, char **argv ) {
     bubble_sort(data, n, k);
     
     // ***** Exercice 2 *****
+    printf("juste avant la procedure build heap : ");
+    print_array(heap.array, n);
     build_heap(heap);
     print_array(heap.array, n);
 
     int array[n];
     Heap heap2={array,n,0}; int element;
+    printf("avant add : ");
+    print_array(heap2.array, n);
     add(&heap2, element);
+    printf("après add : ");
+    print_array(heap2.array, n);
 
+    printf("juste avant la procedure remove max : ");
+    print_array(heap.array, n);
     int max;
     max = remove_max(&heap);
+    printf("apres la procedure remove max : ");
+    print_array(heap.array, n);
     
     // ***** Exercice 3 *****
 
