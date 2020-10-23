@@ -36,6 +36,9 @@ type token =
   | DO
   | IF
   | THEN
+  | DEFINE_NEW_INSTRUCTION
+  | AS
+  | ID of (string)
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit

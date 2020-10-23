@@ -84,12 +84,34 @@ stmts:		block
 
 stmt:		simple_stmt
 				{ () }
-|			ITERATE INT TIMES block
+|			ITERATE iterate_test TIMES block
 				{ () }
-|			WHILE test DO block
+|			WHILE while_test DO block
 				{ () }
-|			IF test THEN block
-				{ () }
+|			IF if_test THEN block
+				{ backpatch $2 (nextquad ()) }
+;
+
+iterate_test: INT
+				{
+					
+				}
+;
+
+while_test:	test
+				{
+				
+				}
+;
+
+if_test:	test
+				{
+					let v = new_temp() in
+					let _ = gen (SETI (v, 0)) in
+					let a = nextquad() in
+					let _ = gen (GOTO_EQ (0, $1, v)) in
+					a	
+				}
 ;
 
 
@@ -109,7 +131,6 @@ simple_stmt: TURN_LEFT
 
 define_new:	DEFINE_NEW_INSTRUCTION ID AS stmts_opt
 				{ () }
-|			
 ;
 
 block:		BEGIN stmts_opt END
@@ -119,39 +140,42 @@ block:		BEGIN stmts_opt END
 ;
 
 test:		FRONT_IS_CLEAR
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_clear, front, res)); res }
 |			FRONT_IS_BLOCKED
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_blocked, front, res)); res }
 |			LEFT_IS_CLEAR
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_clear, left, res)); res }
 |			LEFT_IS_BLOCKED
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_blocked, left, res)); res }
 |			RIGHT_IS_CLEAR
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_clear, right, res)); res }
 |			RIGHT_IS_BLOCKED
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (is_blocked, right, res)); res }
+
 |			NOT_NEXT_TO_A_BEEPER
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (next_beeper, res, 0)); res }
 |			NEXT_TO_A_BEEPER
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (no_next_beeper, res, 0)); res }
+
 |			FACING_NORTH
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (facing, north, res)); res }
 |			NOT_FACING_NORTH
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (not_facing, north, res)); res }
 |			FACING_EAST
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (facing, east, res)); res }
 |			NOT_FACING_EAST
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (not_facing, east, res)); res }
 |			FACING_SOUTH
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (facing, south, res)); res }
 |			NOT_FACING_SOUTH
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (not_facing, south, res)); res }
 |			FACING_WEST
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (facing, west, res)); res }
 |			NOT_FACING_WEST
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (not_facing, west, res)); res }
+
 |			ANY_BEEPERS_IN_BEEPER_BAG
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (any_beeper, res, 0)); res }
 |			NO_BEEPERS_IN_BEEPER_BAG
-				{ () }
+				{ let res = new_temp() in gen(INVOKE (no_beeper, res, 0)); res }
 ;
