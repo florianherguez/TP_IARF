@@ -85,7 +85,7 @@ stmts:		block
 stmt:		simple_stmt
 				{ () }
 |			ITERATE iterate_test TIMES block
-				{ () }
+				{ backpatch $2 (nextquad ()) }
 |			WHILE while_test DO block
 				{ () }
 |			IF if_test THEN block
@@ -94,7 +94,17 @@ stmt:		simple_stmt
 
 iterate_test: INT
 				{
-					
+					print_int $1;
+					let d = new_temp() in
+					let _ = gen(SETI(d, $1)) in
+					let r0 = new_temp() in 
+					let _ = gen(SETI(r0, 0)) in
+					let r1 = new_temp() in 
+					let _ = gen(SETI(r1, 1)) in
+					let _ = gen(SUB(d, d, r1)) in
+					let a = nextquad() in
+					let _ = gen(GOTO_GE(0, d, r0)) in
+					a
 				}
 ;
 
