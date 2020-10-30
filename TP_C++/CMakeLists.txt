@@ -5,5 +5,7 @@ set(CMAKE_CXX_FLAGS
 -Wall -Werror -g -ggdb")
 add_executable(tp_cpp
 src/main.cpp
-src/truc.cpp
+src/ETokenType.h
+src/Lexer.cpp
+src/Lexer.h
 )

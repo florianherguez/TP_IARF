@@ -1,10 +1,15 @@
 #include <iostream>
 
-#include "Expression.h"
+#include "Lexer.h"
 
 
 int main(int argc, char* argv[]) {
-	Expression e(argv[1]);
-	std::cout << "x = " << e.eval() << std::endl;
-	e.print();
+	double x = 5.2;
+	char ch = '8';
+	std::cout << "x = " << x << std::endl;
+
+	Lexer lexer;
+	lexer.setExpression("+ 8 + 3");
+	lexer.getNextToken();
+	
 }
