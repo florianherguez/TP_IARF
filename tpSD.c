@@ -294,38 +294,38 @@ int main( int argc, char **argv ) {
     print_array(data, n);
     
     // ***** Exercice 1 *****
-    bubble_sort(data, n, k);
+    //bubble_sort(data, n, k);
     
     // ***** Exercice 2 *****
-    printf("juste avant la procedure build heap : ");
-    print_array(heap.array, n);
-    build_heap(heap);
-    print_array(heap.array, n);
+    //printf("juste avant la procedure build heap : ");
+    //print_array(heap.array, n);
+    //build_heap(heap);
+    //print_array(heap.array, n);
 
-    int array[n];
-    Heap heap2={array,n,0}; int element;
-    printf("avant add : ");
-    print_array(heap2.array, n);
-    add(&heap2, element);
-    printf("après add : ");
-    print_array(heap2.array, n);
+    //int array[n];
+    //Heap heap2={array,n,0}; int element;
+    //printf("avant add : ");
+    //print_array(heap2.array, n);
+    //add(&heap2, element);
+    //printf("après add : ");
+    //print_array(heap2.array, n);
 
-    printf("juste avant la procedure remove max : ");
-    print_array(heap.array, n);
-    int max;
-    max = remove_max(&heap);
-    printf("apres la procedure remove max : ");
-    print_array(heap.array, n);
+    //printf("juste avant la procedure remove max : ");
+    //print_array(heap.array, n);
+    //int max;
+    //max = remove_max(&heap);
+    //printf("apres la procedure remove max : ");
+    //print_array(heap.array, n);
     
     // ***** Exercice 3 *****
 
     heap_sort(data, n);
 
-    int firstIndex, lastIndex;
+    //int firstIndex, lastIndex;
 
-    quick_sort(data, firstIndex, lastIndex);
+    //quick_sort(data, firstIndex, lastIndex);
     
-    merge_sort(heap.array, firstIndex, lastIndex);
+    //merge_sort(heap.array, firstIndex, lastIndex);
 
     
 
