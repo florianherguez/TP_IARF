@@ -12,9 +12,11 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"BEGINNING-OF-EXECUTION"	{ BEGIN_EXEC }
 |		"END-OF-EXECUTION"			{ END_EXEC }
 |		"END-OF-PROGRAM"			{ END_PROG }
+
 |		"move"						{ MOVE }
 |		"turnleft"					{ TURN_LEFT }
 |		"turnoff"					{ TURN_OFF }
+
 |		"BEGIN"						{ BEGIN }
 |		"END"						{ END }
 
@@ -49,13 +51,17 @@ parse	"BEGINNING-OF-PROGRAM"		{ BEGIN_PROG }
 |		"IF"						{ IF }
 |		"THEN"						{ THEN }
 
+|		"ELSE"						{ ELSE }
+
 |		"DEFINE-NEW-INSTRUCTION"	{ DEFINE_NEW_INSTRUCTION }
 |		"AS"						{ AS }
 		
 |		";"							{ SEMI }
 
 |		string as identifier		{ ID( identifier )}
+
 |		integers as number			{ INT( int_of_string number) }
+
 |		space						{ scan lexbuf }
 |		comment						{ scan lexbuf }
 |		_ as c						{ raise (Common.LexerError (Printf.sprintf "unknown character '%c'" c)) }

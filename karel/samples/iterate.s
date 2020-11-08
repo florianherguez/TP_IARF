@@ -1,51 +1,51 @@
 L0:
 	seti r0, #4
 L1:
-	seti r1, #0
+	seti r1, #1
 L2:
-	seti r2, #1
+	goto_lt L7, r0, r1
 L3:
-	sub r0, r0, r2
+	invoke 1, 0, 0
 L4:
-	goto_ge L7, r0, r1
+	invoke 2, 0, 0
 L5:
-	invoke 1, 0, 0
+	sub r0, r0, r1
 L6:
-	invoke 2, 0, 0
+	goto L2
 L7:
-	seti r3, #4
+	seti r2, #4
 L8:
-	seti r4, #0
+	seti r3, #1
 L9:
-	seti r5, #1
+	goto_lt L13, r2, r3
 L10:
-	sub r3, r3, r5
-L11:
-	goto_ge L13, r3, r4
-L12:
 	invoke 1, 0, 0
+L11:
+	sub r2, r2, r3
+L12:
+	goto L9
 L13:
-	seti r6, #4
+	seti r4, #4
 L14:
-	seti r7, #0
+	seti r5, #1
 L15:
-	seti r8, #1
+	goto_lt L24, r4, r5
 L16:
-	sub r6, r6, r8
+	seti r6, #2
 L17:
-	goto_ge L24, r6, r7
+	seti r7, #1
 L18:
-	seti r9, #2
+	goto_lt L22, r6, r7
 L19:
-	seti r10, #0
-L20:
-	seti r11, #1
-L21:
-	sub r9, r9, r11
-L22:
-	goto_ge L24, r9, r10
-L23:
 	invoke 2, 0, 0
+L20:
+	sub r6, r6, r7
+L21:
+	goto L18
+L22:
+	sub r4, r4, r5
+L23:
+	goto L15
 L24:
 	stop
 L25:

@@ -6,13 +6,11 @@ type token =
   | MOVE
   | TURN_LEFT
   | TURN_OFF
-  | SEMI
   | BEGIN
   | END
   | PICK_BEEPER
   | PUT_BEEPER
   | NEXT_TO_A_BEEPER
-  | INT of (int)
   | FRONT_IS_CLEAR
   | FRONT_IS_BLOCKED
   | LEFT_IS_CLEAR
@@ -20,12 +18,12 @@ type token =
   | RIGHT_IS_CLEAR
   | RIGHT_IS_BLOCKED
   | NOT_NEXT_TO_A_BEEPER
-  | FACING_NORTH
-  | NOT_FACING_NORTH
   | FACING_EAST
   | NOT_FACING_EAST
   | FACING_SOUTH
   | NOT_FACING_SOUTH
+  | FACING_NORTH
+  | NOT_FACING_NORTH
   | FACING_WEST
   | NOT_FACING_WEST
   | ANY_BEEPERS_IN_BEEPER_BAG
@@ -36,9 +34,12 @@ type token =
   | DO
   | IF
   | THEN
+  | ELSE
   | DEFINE_NEW_INSTRUCTION
   | AS
+  | SEMI
   | ID of (string)
+  | INT of (int)
 
 val prog :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit
