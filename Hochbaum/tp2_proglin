@@ -1,0 +1,60 @@
+A)    Probl`eme de transport : (suite)
+minimize z = 4x1 + 3x2 + 6x3 + 3x4 + 5x5 + 3x6 subject to
+x1 + x4 >= 50
+x2 + x5 >= 70
+x3 + x6 >= 80
+x1>=0
+x2>=0
+x3>=0
+x4>=0
+x5>=0
+x6>=0
+
+
+
+Optimal solution: z = 600; x1 = 0, x2 = 70, x3 = 0, x4 = 50, x5 = 0, x6 = 80
+
+
+B) ́Elections
+minimize z = 10000x1 + 7000x2 + 5000x3 subject to
+x1 - 3x2 - 3x3 <= 0
+5x1 + 2x2 + x3  >= 195
+12x1 + 15x2 + 5x3 >= 585
+2x1 + 2x2 + 3x3 >= 260
+x1>=0
+x2>=0
+x3>=0
+
+Optimal solution: z = 600000; x1 = 25, x2 = 0, x3 = 70
+
+C) Fonderie et Atelier
+Maximizi z = 2000x1+3000x2 subject to
+14x1+30x2 <= 210
+10x1+12x2<=100
+5x1+4x2<=45
+x1>=0
+x2>=0
+
+Optimal solution: miziz = 23181.8; x1 = 3.63636, x2 = 5.30303
+
+
+
+
+
+D //Planification de production
+
+Minimize z = 7y1 + 7y2 + 7y3 + 3s1 + 3s2 subject to
+x1 <= 1200
+x2 <= 1200
+x3 <= 1200
+y1 <= 1600
+y2 <= 1600
+y3 <= 1600
+x1 + y1 >= 900
+x1 + y1 - s1 = 900
+x2 + y2 >= 1100
+x2 + y2 - s2 + s1 = 1100
+x1 + y1 + x2 + y2 + x3 + y3 >= 3700
+
+
+Optimal solution: z = 2800; s1 = 300, s2 = 400, x1 = 1200, x2 = 1200, x3 = 1200, y1 = 0, y2 = 0, y3 = 100
