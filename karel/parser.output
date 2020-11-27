@@ -1,6 +1,6 @@
    0  $accept : %entry% $end
 
-   1  prog : begin_programm lst_define adress BEGIN_EXEC stmts_opt END_EXEC END_PROG
+   1  prog : begin_programm lst_define adresse BEGIN_EXEC stmts_opt END_EXEC END_PROG
 
    2  begin_programm : BEGIN_PROG
 
@@ -12,61 +12,65 @@
    7        | stmts SEMI
 
    8  stmt : simple_stmt
-   9       | ITERATE iterate_int TIMES block
-  10       | WHILE adress if_test DO goto_block
-  11       | IF if_test THEN block
-  12       | IF if_test THEN closed_block adress_else ELSE block
+   9       | ITERATE iterate_int TIMES goto_block
+  10       | WHILE adresse gen_test DO goto_block
+  11       | IF gen_test THEN block
+  12       | IF gen_test THEN goto_inside_block ELSE adresse block
 
-  13  closed_block : simple_stmt
-  14               | IF if_test THEN closed_block adress_else ELSE closed_block
-  15               | WHILE adress if_test DO closed_block
+  13  define_new : adresse DEFINE_NEW_INSTRUCTION ID AS block
 
-  16  define_new : adress DEFINE_NEW_INSTRUCTION ID AS block
+  14  lst_define :
+  15             | lst_define define_new
+  16             | lst_define define_new SEMI
 
-  17  lst_define :
-  18             | lst_define define_new
-  19             | lst_define define_new SEMI
+  17  block : BEGIN stmts_opt END
+  18        | stmt
 
-  20  block : BEGIN stmts_opt END
-  21        | stmt
+  19  inside_block : BEGIN stmts_opt END
+  20               | inside_stmt
 
-  22  simple_stmt : TURN_LEFT
-  23              | TURN_OFF
-  24              | MOVE
-  25              | PICK_BEEPER
-  26              | PUT_BEEPER
-  27              | ID
+  21  inside_stmt : simple_stmt
+  22              | IF gen_test THEN goto_inside_block ELSE adresse inside_block
+  23              | WHILE adresse gen_test DO goto_inside_block
+  24              | ITERATE iterate_int TIMES goto_inside_block
 
-  28  test : FRONT_IS_CLEAR
-  29       | FRONT_IS_BLOCKED
-  30       | LEFT_IS_CLEAR
-  31       | LEFT_IS_BLOCKED
-  32       | RIGHT_IS_CLEAR
-  33       | RIGHT_IS_BLOCKED
-  34       | NOT_NEXT_TO_A_BEEPER
-  35       | NEXT_TO_A_BEEPER
-  36       | FACING_EAST
-  37       | NOT_FACING_EAST
-  38       | FACING_SOUTH
-  39       | NOT_FACING_SOUTH
-  40       | FACING_NORTH
-  41       | NOT_FACING_NORTH
-  42       | FACING_WEST
-  43       | NOT_FACING_WEST
-  44       | ANY_BEEPERS_IN_BEEPER_BAG
-  45       | NO_BEEPERS_IN_BEEPER_BAG
+  25  simple_stmt : TURN_LEFT
+  26              | TURN_OFF
+  27              | MOVE
+  28              | PICK_BEEPER
+  29              | PUT_BEEPER
+  30              | ID
 
-  46  if_test : test
+  31  test : FRONT_IS_CLEAR
+  32       | FRONT_IS_BLOCKED
+  33       | LEFT_IS_CLEAR
+  34       | LEFT_IS_BLOCKED
+  35       | RIGHT_IS_CLEAR
+  36       | RIGHT_IS_BLOCKED
+  37       | NOT_NEXT_TO_A_BEEPER
+  38       | NEXT_TO_A_BEEPER
+  39       | FACING_NORTH
+  40       | NOT_FACING_NORTH
+  41       | FACING_EAST
+  42       | NOT_FACING_EAST
+  43       | FACING_SOUTH
+  44       | NOT_FACING_SOUTH
+  45       | FACING_WEST
+  46       | NOT_FACING_WEST
+  47       | ANY_BEEPERS_IN_BEEPER_BAG
+  48       | NO_BEEPERS_IN_BEEPER_BAG
 
-  47  goto_block : block
+  49  gen_test : test
 
-  48  iterate_int : INT
+  50  goto_block : block
 
-  49  adress :
+  51  goto_inside_block : inside_block
 
-  50  adress_else :
+  52  iterate_int : INT
 
-  51  %entry% : '\001' prog
+  53  adresse :
+
+  54  %entry% : '\001' prog
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -78,7 +82,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . prog  (51)
+	%entry% : '\001' . prog  (54)
 
 	BEGIN_PROG  shift 3
 	.  error
@@ -100,35 +104,35 @@ state 3
 
 
 state 4
-	%entry% : '\001' prog .  (51)
+	%entry% : '\001' prog .  (54)
 
-	.  reduce 51
+	.  reduce 54
 
 
 state 5
-	prog : begin_programm . lst_define adress BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
-	lst_define : .  (17)
+	prog : begin_programm . lst_define adresse BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
+	lst_define : .  (14)
 
-	.  reduce 17
+	.  reduce 14
 
 	lst_define  goto 6
 
 
 state 6
-	prog : begin_programm lst_define . adress BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
-	lst_define : lst_define . define_new  (18)
-	lst_define : lst_define . define_new SEMI  (19)
-	adress : .  (49)
+	prog : begin_programm lst_define . adresse BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
+	lst_define : lst_define . define_new  (15)
+	lst_define : lst_define . define_new SEMI  (16)
+	adresse : .  (53)
 
-	.  reduce 49
+	.  reduce 53
 
-	adress  goto 7
+	adresse  goto 7
 	define_new  goto 8
 
 
 state 7
-	prog : begin_programm lst_define adress . BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
-	define_new : adress . DEFINE_NEW_INSTRUCTION ID AS block  (16)
+	prog : begin_programm lst_define adresse . BEGIN_EXEC stmts_opt END_EXEC END_PROG  (1)
+	define_new : adresse . DEFINE_NEW_INSTRUCTION ID AS block  (13)
 
 	BEGIN_EXEC  shift 9
 	DEFINE_NEW_INSTRUCTION  shift 10
@@ -136,16 +140,16 @@ state 7
 
 
 state 8
-	lst_define : lst_define define_new .  (18)
-	lst_define : lst_define define_new . SEMI  (19)
+	lst_define : lst_define define_new .  (15)
+	lst_define : lst_define define_new . SEMI  (16)
 
 	SEMI  shift 11
-	BEGIN_EXEC  reduce 18
-	DEFINE_NEW_INSTRUCTION  reduce 18
+	BEGIN_EXEC  reduce 15
+	DEFINE_NEW_INSTRUCTION  reduce 15
 
 
 state 9
-	prog : begin_programm lst_define adress BEGIN_EXEC . stmts_opt END_EXEC END_PROG  (1)
+	prog : begin_programm lst_define adresse BEGIN_EXEC . stmts_opt END_EXEC END_PROG  (1)
 	stmts_opt : .  (3)
 
 	MOVE  shift 12
@@ -168,38 +172,38 @@ state 9
 
 
 state 10
-	define_new : adress DEFINE_NEW_INSTRUCTION . ID AS block  (16)
+	define_new : adresse DEFINE_NEW_INSTRUCTION . ID AS block  (13)
 
 	ID  shift 27
 	.  error
 
 
 state 11
-	lst_define : lst_define define_new SEMI .  (19)
+	lst_define : lst_define define_new SEMI .  (16)
 
-	.  reduce 19
+	.  reduce 16
 
 
 state 12
-	simple_stmt : MOVE .  (24)
+	simple_stmt : MOVE .  (27)
 
-	.  reduce 24
+	.  reduce 27
 
 
 state 13
-	simple_stmt : TURN_LEFT .  (22)
+	simple_stmt : TURN_LEFT .  (25)
 
-	.  reduce 22
+	.  reduce 25
 
 
 state 14
-	simple_stmt : TURN_OFF .  (23)
+	simple_stmt : TURN_OFF .  (26)
 
-	.  reduce 23
+	.  reduce 26
 
 
 state 15
-	block : BEGIN . stmts_opt END  (20)
+	block : BEGIN . stmts_opt END  (17)
 	stmts_opt : .  (3)
 
 	MOVE  shift 12
@@ -222,19 +226,19 @@ state 15
 
 
 state 16
-	simple_stmt : PICK_BEEPER .  (25)
+	simple_stmt : PICK_BEEPER .  (28)
 
-	.  reduce 25
+	.  reduce 28
 
 
 state 17
-	simple_stmt : PUT_BEEPER .  (26)
+	simple_stmt : PUT_BEEPER .  (29)
 
-	.  reduce 26
+	.  reduce 29
 
 
 state 18
-	stmt : ITERATE . iterate_int TIMES block  (9)
+	stmt : ITERATE . iterate_int TIMES goto_block  (9)
 
 	INT  shift 29
 	.  error
@@ -243,17 +247,17 @@ state 18
 
 
 state 19
-	stmt : WHILE . adress if_test DO goto_block  (10)
-	adress : .  (49)
+	stmt : WHILE . adresse gen_test DO goto_block  (10)
+	adresse : .  (53)
 
-	.  reduce 49
+	.  reduce 53
 
-	adress  goto 31
+	adresse  goto 31
 
 
 state 20
-	stmt : IF . if_test THEN block  (11)
-	stmt : IF . if_test THEN closed_block adress_else ELSE block  (12)
+	stmt : IF . gen_test THEN block  (11)
+	stmt : IF . gen_test THEN goto_inside_block ELSE adresse block  (12)
 
 	NEXT_TO_A_BEEPER  shift 32
 	FRONT_IS_CLEAR  shift 33
@@ -263,30 +267,30 @@ state 20
 	RIGHT_IS_CLEAR  shift 37
 	RIGHT_IS_BLOCKED  shift 38
 	NOT_NEXT_TO_A_BEEPER  shift 39
-	FACING_EAST  shift 40
-	NOT_FACING_EAST  shift 41
-	FACING_SOUTH  shift 42
-	NOT_FACING_SOUTH  shift 43
-	FACING_NORTH  shift 44
-	NOT_FACING_NORTH  shift 45
+	FACING_NORTH  shift 40
+	NOT_FACING_NORTH  shift 41
+	FACING_EAST  shift 42
+	NOT_FACING_EAST  shift 43
+	FACING_SOUTH  shift 44
+	NOT_FACING_SOUTH  shift 45
 	FACING_WEST  shift 46
 	NOT_FACING_WEST  shift 47
 	ANY_BEEPERS_IN_BEEPER_BAG  shift 48
 	NO_BEEPERS_IN_BEEPER_BAG  shift 49
 	.  error
 
-	if_test  goto 50
+	gen_test  goto 50
 	test  goto 51
 
 
 state 21
-	simple_stmt : ID .  (27)
+	simple_stmt : ID .  (30)
 
-	.  reduce 27
+	.  reduce 30
 
 
 state 22
-	prog : begin_programm lst_define adress BEGIN_EXEC stmts_opt . END_EXEC END_PROG  (1)
+	prog : begin_programm lst_define adresse BEGIN_EXEC stmts_opt . END_EXEC END_PROG  (1)
 
 	END_EXEC  shift 52
 	.  error
@@ -309,9 +313,9 @@ state 24
 
 
 state 25
-	block : stmt .  (21)
+	block : stmt .  (18)
 
-	.  reduce 21
+	.  reduce 18
 
 
 state 26
@@ -321,34 +325,34 @@ state 26
 
 
 state 27
-	define_new : adress DEFINE_NEW_INSTRUCTION ID . AS block  (16)
+	define_new : adresse DEFINE_NEW_INSTRUCTION ID . AS block  (13)
 
 	AS  shift 54
 	.  error
 
 
 state 28
-	block : BEGIN stmts_opt . END  (20)
+	block : BEGIN stmts_opt . END  (17)
 
 	END  shift 55
 	.  error
 
 
 state 29
-	iterate_int : INT .  (48)
+	iterate_int : INT .  (52)
 
-	.  reduce 48
+	.  reduce 52
 
 
 state 30
-	stmt : ITERATE iterate_int . TIMES block  (9)
+	stmt : ITERATE iterate_int . TIMES goto_block  (9)
 
 	TIMES  shift 56
 	.  error
 
 
 state 31
-	stmt : WHILE adress . if_test DO goto_block  (10)
+	stmt : WHILE adresse . gen_test DO goto_block  (10)
 
 	NEXT_TO_A_BEEPER  shift 32
 	FRONT_IS_CLEAR  shift 33
@@ -358,146 +362,146 @@ state 31
 	RIGHT_IS_CLEAR  shift 37
 	RIGHT_IS_BLOCKED  shift 38
 	NOT_NEXT_TO_A_BEEPER  shift 39
-	FACING_EAST  shift 40
-	NOT_FACING_EAST  shift 41
-	FACING_SOUTH  shift 42
-	NOT_FACING_SOUTH  shift 43
-	FACING_NORTH  shift 44
-	NOT_FACING_NORTH  shift 45
+	FACING_NORTH  shift 40
+	NOT_FACING_NORTH  shift 41
+	FACING_EAST  shift 42
+	NOT_FACING_EAST  shift 43
+	FACING_SOUTH  shift 44
+	NOT_FACING_SOUTH  shift 45
 	FACING_WEST  shift 46
 	NOT_FACING_WEST  shift 47
 	ANY_BEEPERS_IN_BEEPER_BAG  shift 48
 	NO_BEEPERS_IN_BEEPER_BAG  shift 49
 	.  error
 
-	if_test  goto 57
+	gen_test  goto 57
 	test  goto 51
 
 
 state 32
-	test : NEXT_TO_A_BEEPER .  (35)
-
-	.  reduce 35
-
-
-state 33
-	test : FRONT_IS_CLEAR .  (28)
-
-	.  reduce 28
-
-
-state 34
-	test : FRONT_IS_BLOCKED .  (29)
-
-	.  reduce 29
-
-
-state 35
-	test : LEFT_IS_CLEAR .  (30)
-
-	.  reduce 30
-
-
-state 36
-	test : LEFT_IS_BLOCKED .  (31)
-
-	.  reduce 31
-
-
-state 37
-	test : RIGHT_IS_CLEAR .  (32)
-
-	.  reduce 32
-
-
-state 38
-	test : RIGHT_IS_BLOCKED .  (33)
-
-	.  reduce 33
-
-
-state 39
-	test : NOT_NEXT_TO_A_BEEPER .  (34)
-
-	.  reduce 34
-
-
-state 40
-	test : FACING_EAST .  (36)
-
-	.  reduce 36
-
-
-state 41
-	test : NOT_FACING_EAST .  (37)
-
-	.  reduce 37
-
-
-state 42
-	test : FACING_SOUTH .  (38)
+	test : NEXT_TO_A_BEEPER .  (38)
 
 	.  reduce 38
 
 
-state 43
-	test : NOT_FACING_SOUTH .  (39)
+state 33
+	test : FRONT_IS_CLEAR .  (31)
+
+	.  reduce 31
+
+
+state 34
+	test : FRONT_IS_BLOCKED .  (32)
+
+	.  reduce 32
+
+
+state 35
+	test : LEFT_IS_CLEAR .  (33)
+
+	.  reduce 33
+
+
+state 36
+	test : LEFT_IS_BLOCKED .  (34)
+
+	.  reduce 34
+
+
+state 37
+	test : RIGHT_IS_CLEAR .  (35)
+
+	.  reduce 35
+
+
+state 38
+	test : RIGHT_IS_BLOCKED .  (36)
+
+	.  reduce 36
+
+
+state 39
+	test : NOT_NEXT_TO_A_BEEPER .  (37)
+
+	.  reduce 37
+
+
+state 40
+	test : FACING_NORTH .  (39)
 
 	.  reduce 39
 
 
-state 44
-	test : FACING_NORTH .  (40)
+state 41
+	test : NOT_FACING_NORTH .  (40)
 
 	.  reduce 40
 
 
-state 45
-	test : NOT_FACING_NORTH .  (41)
+state 42
+	test : FACING_EAST .  (41)
 
 	.  reduce 41
 
 
-state 46
-	test : FACING_WEST .  (42)
+state 43
+	test : NOT_FACING_EAST .  (42)
 
 	.  reduce 42
 
 
-state 47
-	test : NOT_FACING_WEST .  (43)
+state 44
+	test : FACING_SOUTH .  (43)
 
 	.  reduce 43
 
 
-state 48
-	test : ANY_BEEPERS_IN_BEEPER_BAG .  (44)
+state 45
+	test : NOT_FACING_SOUTH .  (44)
 
 	.  reduce 44
 
 
-state 49
-	test : NO_BEEPERS_IN_BEEPER_BAG .  (45)
+state 46
+	test : FACING_WEST .  (45)
 
 	.  reduce 45
 
 
+state 47
+	test : NOT_FACING_WEST .  (46)
+
+	.  reduce 46
+
+
+state 48
+	test : ANY_BEEPERS_IN_BEEPER_BAG .  (47)
+
+	.  reduce 47
+
+
+state 49
+	test : NO_BEEPERS_IN_BEEPER_BAG .  (48)
+
+	.  reduce 48
+
+
 state 50
-	stmt : IF if_test . THEN block  (11)
-	stmt : IF if_test . THEN closed_block adress_else ELSE block  (12)
+	stmt : IF gen_test . THEN block  (11)
+	stmt : IF gen_test . THEN goto_inside_block ELSE adresse block  (12)
 
 	THEN  shift 58
 	.  error
 
 
 state 51
-	if_test : test .  (46)
+	gen_test : test .  (49)
 
-	.  reduce 46
+	.  reduce 49
 
 
 state 52
-	prog : begin_programm lst_define adress BEGIN_EXEC stmts_opt END_EXEC . END_PROG  (1)
+	prog : begin_programm lst_define adresse BEGIN_EXEC stmts_opt END_EXEC . END_PROG  (1)
 
 	END_PROG  shift 59
 	.  error
@@ -518,8 +522,8 @@ state 53
 	IF  shift 20
 	ID  shift 21
 	END_EXEC  reduce 7
-	END  reduce 7
 	SEMI  reduce 7
+	END  reduce 7
 
 	block  goto 60
 	stmt  goto 25
@@ -527,7 +531,7 @@ state 53
 
 
 state 54
-	define_new : adress DEFINE_NEW_INSTRUCTION ID AS . block  (16)
+	define_new : adresse DEFINE_NEW_INSTRUCTION ID AS . block  (13)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
@@ -547,13 +551,13 @@ state 54
 
 
 state 55
-	block : BEGIN stmts_opt END .  (20)
+	block : BEGIN stmts_opt END .  (17)
 
-	.  reduce 20
+	.  reduce 17
 
 
 state 56
-	stmt : ITERATE iterate_int TIMES . block  (9)
+	stmt : ITERATE iterate_int TIMES . goto_block  (9)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
@@ -570,39 +574,42 @@ state 56
 	block  goto 62
 	stmt  goto 25
 	simple_stmt  goto 26
+	goto_block  goto 63
 
 
 state 57
-	stmt : WHILE adress if_test . DO goto_block  (10)
+	stmt : WHILE adresse gen_test . DO goto_block  (10)
 
-	DO  shift 63
+	DO  shift 64
 	.  error
 
 
 state 58
-	stmt : IF if_test THEN . block  (11)
-	stmt : IF if_test THEN . closed_block adress_else ELSE block  (12)
+	stmt : IF gen_test THEN . block  (11)
+	stmt : IF gen_test THEN . goto_inside_block ELSE adresse block  (12)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
 	TURN_OFF  shift 14
-	BEGIN  shift 15
+	BEGIN  shift 65
 	PICK_BEEPER  shift 16
 	PUT_BEEPER  shift 17
-	ITERATE  shift 18
-	WHILE  shift 64
-	IF  shift 65
+	ITERATE  shift 66
+	WHILE  shift 67
+	IF  shift 68
 	ID  shift 21
 	.  error
 
-	block  goto 66
+	block  goto 69
 	stmt  goto 25
-	simple_stmt  goto 67
-	closed_block  goto 68
+	simple_stmt  goto 70
+	goto_inside_block  goto 71
+	inside_block  goto 72
+	inside_stmt  goto 73
 
 
 state 59
-	prog : begin_programm lst_define adress BEGIN_EXEC stmts_opt END_EXEC END_PROG .  (1)
+	prog : begin_programm lst_define adresse BEGIN_EXEC stmts_opt END_EXEC END_PROG .  (1)
 
 	.  reduce 1
 
@@ -614,19 +621,25 @@ state 60
 
 
 state 61
-	define_new : adress DEFINE_NEW_INSTRUCTION ID AS block .  (16)
+	define_new : adresse DEFINE_NEW_INSTRUCTION ID AS block .  (13)
 
-	.  reduce 16
+	.  reduce 13
 
 
 state 62
-	stmt : ITERATE iterate_int TIMES block .  (9)
+	goto_block : block .  (50)
+
+	.  reduce 50
+
+
+state 63
+	stmt : ITERATE iterate_int TIMES goto_block .  (9)
 
 	.  reduce 9
 
 
-state 63
-	stmt : WHILE adress if_test DO . goto_block  (10)
+state 64
+	stmt : WHILE adresse gen_test DO . goto_block  (10)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
@@ -640,26 +653,60 @@ state 63
 	ID  shift 21
 	.  error
 
-	block  goto 69
+	block  goto 62
 	stmt  goto 25
 	simple_stmt  goto 26
-	goto_block  goto 70
-
-
-state 64
-	stmt : WHILE . adress if_test DO goto_block  (10)
-	closed_block : WHILE . adress if_test DO closed_block  (15)
-	adress : .  (49)
-
-	.  reduce 49
-
-	adress  goto 71
+	goto_block  goto 74
 
 
 state 65
-	stmt : IF . if_test THEN block  (11)
-	stmt : IF . if_test THEN closed_block adress_else ELSE block  (12)
-	closed_block : IF . if_test THEN closed_block adress_else ELSE closed_block  (14)
+	block : BEGIN . stmts_opt END  (17)
+	inside_block : BEGIN . stmts_opt END  (19)
+	stmts_opt : .  (3)
+
+	MOVE  shift 12
+	TURN_LEFT  shift 13
+	TURN_OFF  shift 14
+	BEGIN  shift 15
+	PICK_BEEPER  shift 16
+	PUT_BEEPER  shift 17
+	ITERATE  shift 18
+	WHILE  shift 19
+	IF  shift 20
+	ID  shift 21
+	END  reduce 3
+
+	stmts_opt  goto 75
+	stmts  goto 23
+	block  goto 24
+	stmt  goto 25
+	simple_stmt  goto 26
+
+
+state 66
+	stmt : ITERATE . iterate_int TIMES goto_block  (9)
+	inside_stmt : ITERATE . iterate_int TIMES goto_inside_block  (24)
+
+	INT  shift 29
+	.  error
+
+	iterate_int  goto 76
+
+
+state 67
+	stmt : WHILE . adresse gen_test DO goto_block  (10)
+	inside_stmt : WHILE . adresse gen_test DO goto_inside_block  (23)
+	adresse : .  (53)
+
+	.  reduce 53
+
+	adresse  goto 77
+
+
+state 68
+	stmt : IF . gen_test THEN block  (11)
+	stmt : IF . gen_test THEN goto_inside_block ELSE adresse block  (12)
+	inside_stmt : IF . gen_test THEN goto_inside_block ELSE adresse inside_block  (22)
 
 	NEXT_TO_A_BEEPER  shift 32
 	FRONT_IS_CLEAR  shift 33
@@ -669,64 +716,84 @@ state 65
 	RIGHT_IS_CLEAR  shift 37
 	RIGHT_IS_BLOCKED  shift 38
 	NOT_NEXT_TO_A_BEEPER  shift 39
-	FACING_EAST  shift 40
-	NOT_FACING_EAST  shift 41
-	FACING_SOUTH  shift 42
-	NOT_FACING_SOUTH  shift 43
-	FACING_NORTH  shift 44
-	NOT_FACING_NORTH  shift 45
+	FACING_NORTH  shift 40
+	NOT_FACING_NORTH  shift 41
+	FACING_EAST  shift 42
+	NOT_FACING_EAST  shift 43
+	FACING_SOUTH  shift 44
+	NOT_FACING_SOUTH  shift 45
 	FACING_WEST  shift 46
 	NOT_FACING_WEST  shift 47
 	ANY_BEEPERS_IN_BEEPER_BAG  shift 48
 	NO_BEEPERS_IN_BEEPER_BAG  shift 49
 	.  error
 
-	if_test  goto 72
+	gen_test  goto 78
 	test  goto 51
 
 
-state 66
-	stmt : IF if_test THEN block .  (11)
+state 69
+	stmt : IF gen_test THEN block .  (11)
 
 	.  reduce 11
 
 
-state 67
+state 70
 	stmt : simple_stmt .  (8)
-	closed_block : simple_stmt .  (13)
+	inside_stmt : simple_stmt .  (21)
 
 	BEGIN_EXEC  reduce 8
 	END_EXEC  reduce 8
-	END  reduce 8
-	ELSE  reduce 13
-	DEFINE_NEW_INSTRUCTION  reduce 8
 	SEMI  reduce 8
+	END  reduce 8
+	DEFINE_NEW_INSTRUCTION  reduce 8
+	ELSE  reduce 21
 
 
-state 68
-	stmt : IF if_test THEN closed_block . adress_else ELSE block  (12)
-	adress_else : .  (50)
+state 71
+	stmt : IF gen_test THEN goto_inside_block . ELSE adresse block  (12)
 
-	.  reduce 50
-
-	adress_else  goto 73
+	ELSE  shift 79
+	.  error
 
 
-state 69
-	goto_block : block .  (47)
+state 72
+	goto_inside_block : inside_block .  (51)
 
-	.  reduce 47
+	.  reduce 51
 
 
-state 70
-	stmt : WHILE adress if_test DO goto_block .  (10)
+state 73
+	inside_block : inside_stmt .  (20)
+
+	.  reduce 20
+
+
+state 74
+	stmt : WHILE adresse gen_test DO goto_block .  (10)
 
 	.  reduce 10
 
 
-state 71
-	stmt : WHILE adress . if_test DO goto_block  (10)
-	closed_block : WHILE adress . if_test DO closed_block  (15)
+state 75
+	block : BEGIN stmts_opt . END  (17)
+	inside_block : BEGIN stmts_opt . END  (19)
+
+	END  shift 80
+	.  error
+
+
+state 76
+	stmt : ITERATE iterate_int . TIMES goto_block  (9)
+	inside_stmt : ITERATE iterate_int . TIMES goto_inside_block  (24)
+
+	TIMES  shift 81
+	.  error
+
+
+state 77
+	stmt : WHILE adresse . gen_test DO goto_block  (10)
+	inside_stmt : WHILE adresse . gen_test DO goto_inside_block  (23)
 
 	NEXT_TO_A_BEEPER  shift 32
 	FRONT_IS_CLEAR  shift 33
@@ -736,71 +803,112 @@ state 71
 	RIGHT_IS_CLEAR  shift 37
 	RIGHT_IS_BLOCKED  shift 38
 	NOT_NEXT_TO_A_BEEPER  shift 39
-	FACING_EAST  shift 40
-	NOT_FACING_EAST  shift 41
-	FACING_SOUTH  shift 42
-	NOT_FACING_SOUTH  shift 43
-	FACING_NORTH  shift 44
-	NOT_FACING_NORTH  shift 45
+	FACING_NORTH  shift 40
+	NOT_FACING_NORTH  shift 41
+	FACING_EAST  shift 42
+	NOT_FACING_EAST  shift 43
+	FACING_SOUTH  shift 44
+	NOT_FACING_SOUTH  shift 45
 	FACING_WEST  shift 46
 	NOT_FACING_WEST  shift 47
 	ANY_BEEPERS_IN_BEEPER_BAG  shift 48
 	NO_BEEPERS_IN_BEEPER_BAG  shift 49
 	.  error
 
-	if_test  goto 74
+	gen_test  goto 82
 	test  goto 51
 
 
-state 72
-	stmt : IF if_test . THEN block  (11)
-	stmt : IF if_test . THEN closed_block adress_else ELSE block  (12)
-	closed_block : IF if_test . THEN closed_block adress_else ELSE closed_block  (14)
+state 78
+	stmt : IF gen_test . THEN block  (11)
+	stmt : IF gen_test . THEN goto_inside_block ELSE adresse block  (12)
+	inside_stmt : IF gen_test . THEN goto_inside_block ELSE adresse inside_block  (22)
 
-	THEN  shift 75
+	THEN  shift 83
 	.  error
 
 
-state 73
-	stmt : IF if_test THEN closed_block adress_else . ELSE block  (12)
+state 79
+	stmt : IF gen_test THEN goto_inside_block ELSE . adresse block  (12)
+	adresse : .  (53)
 
-	ELSE  shift 76
-	.  error
+	.  reduce 53
 
-
-state 74
-	stmt : WHILE adress if_test . DO goto_block  (10)
-	closed_block : WHILE adress if_test . DO closed_block  (15)
-
-	DO  shift 77
-	.  error
+	adresse  goto 84
 
 
-state 75
-	stmt : IF if_test THEN . block  (11)
-	stmt : IF if_test THEN . closed_block adress_else ELSE block  (12)
-	closed_block : IF if_test THEN . closed_block adress_else ELSE closed_block  (14)
+state 80
+	block : BEGIN stmts_opt END .  (17)
+	inside_block : BEGIN stmts_opt END .  (19)
+
+	BEGIN_EXEC  reduce 17
+	END_EXEC  reduce 17
+	SEMI  reduce 17
+	END  reduce 17
+	DEFINE_NEW_INSTRUCTION  reduce 17
+	ELSE  reduce 19
+
+
+state 81
+	stmt : ITERATE iterate_int TIMES . goto_block  (9)
+	inside_stmt : ITERATE iterate_int TIMES . goto_inside_block  (24)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
 	TURN_OFF  shift 14
-	BEGIN  shift 15
+	BEGIN  shift 65
 	PICK_BEEPER  shift 16
 	PUT_BEEPER  shift 17
-	ITERATE  shift 18
-	WHILE  shift 64
-	IF  shift 65
+	ITERATE  shift 66
+	WHILE  shift 67
+	IF  shift 68
 	ID  shift 21
 	.  error
 
-	block  goto 66
+	block  goto 62
 	stmt  goto 25
-	simple_stmt  goto 67
-	closed_block  goto 78
+	simple_stmt  goto 70
+	goto_block  goto 63
+	goto_inside_block  goto 85
+	inside_block  goto 72
+	inside_stmt  goto 73
 
 
-state 76
-	stmt : IF if_test THEN closed_block adress_else ELSE . block  (12)
+state 82
+	stmt : WHILE adresse gen_test . DO goto_block  (10)
+	inside_stmt : WHILE adresse gen_test . DO goto_inside_block  (23)
+
+	DO  shift 86
+	.  error
+
+
+state 83
+	stmt : IF gen_test THEN . block  (11)
+	stmt : IF gen_test THEN . goto_inside_block ELSE adresse block  (12)
+	inside_stmt : IF gen_test THEN . goto_inside_block ELSE adresse inside_block  (22)
+
+	MOVE  shift 12
+	TURN_LEFT  shift 13
+	TURN_OFF  shift 14
+	BEGIN  shift 65
+	PICK_BEEPER  shift 16
+	PUT_BEEPER  shift 17
+	ITERATE  shift 66
+	WHILE  shift 67
+	IF  shift 68
+	ID  shift 21
+	.  error
+
+	block  goto 69
+	stmt  goto 25
+	simple_stmt  goto 70
+	goto_inside_block  goto 87
+	inside_block  goto 72
+	inside_stmt  goto 73
+
+
+state 84
+	stmt : IF gen_test THEN goto_inside_block ELSE adresse . block  (12)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
@@ -814,91 +922,100 @@ state 76
 	ID  shift 21
 	.  error
 
-	block  goto 79
+	block  goto 88
 	stmt  goto 25
 	simple_stmt  goto 26
 
 
-state 77
-	stmt : WHILE adress if_test DO . goto_block  (10)
-	closed_block : WHILE adress if_test DO . closed_block  (15)
+state 85
+	inside_stmt : ITERATE iterate_int TIMES goto_inside_block .  (24)
+
+	.  reduce 24
+
+
+state 86
+	stmt : WHILE adresse gen_test DO . goto_block  (10)
+	inside_stmt : WHILE adresse gen_test DO . goto_inside_block  (23)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
 	TURN_OFF  shift 14
-	BEGIN  shift 15
+	BEGIN  shift 65
 	PICK_BEEPER  shift 16
 	PUT_BEEPER  shift 17
-	ITERATE  shift 18
-	WHILE  shift 64
-	IF  shift 65
+	ITERATE  shift 66
+	WHILE  shift 67
+	IF  shift 68
 	ID  shift 21
 	.  error
 
-	block  goto 69
+	block  goto 62
 	stmt  goto 25
-	simple_stmt  goto 67
-	goto_block  goto 70
-	closed_block  goto 80
+	simple_stmt  goto 70
+	goto_block  goto 74
+	goto_inside_block  goto 89
+	inside_block  goto 72
+	inside_stmt  goto 73
 
 
-state 78
-	stmt : IF if_test THEN closed_block . adress_else ELSE block  (12)
-	closed_block : IF if_test THEN closed_block . adress_else ELSE closed_block  (14)
-	adress_else : .  (50)
+state 87
+	stmt : IF gen_test THEN goto_inside_block . ELSE adresse block  (12)
+	inside_stmt : IF gen_test THEN goto_inside_block . ELSE adresse inside_block  (22)
 
-	.  reduce 50
-
-	adress_else  goto 81
+	ELSE  shift 90
+	.  error
 
 
-state 79
-	stmt : IF if_test THEN closed_block adress_else ELSE block .  (12)
+state 88
+	stmt : IF gen_test THEN goto_inside_block ELSE adresse block .  (12)
 
 	.  reduce 12
 
 
-state 80
-	closed_block : WHILE adress if_test DO closed_block .  (15)
+state 89
+	inside_stmt : WHILE adresse gen_test DO goto_inside_block .  (23)
 
-	.  reduce 15
-
-
-state 81
-	stmt : IF if_test THEN closed_block adress_else . ELSE block  (12)
-	closed_block : IF if_test THEN closed_block adress_else . ELSE closed_block  (14)
-
-	ELSE  shift 82
-	.  error
+	.  reduce 23
 
 
-state 82
-	stmt : IF if_test THEN closed_block adress_else ELSE . block  (12)
-	closed_block : IF if_test THEN closed_block adress_else ELSE . closed_block  (14)
+state 90
+	stmt : IF gen_test THEN goto_inside_block ELSE . adresse block  (12)
+	inside_stmt : IF gen_test THEN goto_inside_block ELSE . adresse inside_block  (22)
+	adresse : .  (53)
+
+	.  reduce 53
+
+	adresse  goto 91
+
+
+state 91
+	stmt : IF gen_test THEN goto_inside_block ELSE adresse . block  (12)
+	inside_stmt : IF gen_test THEN goto_inside_block ELSE adresse . inside_block  (22)
 
 	MOVE  shift 12
 	TURN_LEFT  shift 13
 	TURN_OFF  shift 14
-	BEGIN  shift 15
+	BEGIN  shift 65
 	PICK_BEEPER  shift 16
 	PUT_BEEPER  shift 17
-	ITERATE  shift 18
-	WHILE  shift 64
-	IF  shift 65
+	ITERATE  shift 66
+	WHILE  shift 67
+	IF  shift 68
 	ID  shift 21
 	.  error
 
-	block  goto 79
+	block  goto 88
 	stmt  goto 25
-	simple_stmt  goto 67
-	closed_block  goto 83
+	simple_stmt  goto 70
+	inside_block  goto 92
+	inside_stmt  goto 73
 
 
-state 83
-	closed_block : IF if_test THEN closed_block adress_else ELSE closed_block .  (14)
+state 92
+	inside_stmt : IF gen_test THEN goto_inside_block ELSE adresse inside_block .  (22)
 
-	.  reduce 14
+	.  reduce 22
 
 
-44 terminals, 18 nonterminals
-52 grammar rules, 84 states
+44 terminals, 19 nonterminals
+55 grammar rules, 93 states
